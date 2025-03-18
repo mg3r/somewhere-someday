@@ -105,11 +105,11 @@ body.authenticated {
     border-radius: 5px;
     background-color: rgba(50, 50, 50, 0.8);
     color: #ffffff;
-    font-size: 16px; /* Slightly larger for mobile */
+    font-size: 14px; /* Slightly larger for mobile */
     outline: none;
     box-sizing: border-box;
     /* Prevent zoom on focus for mobile devices */
-    font-size: 16px; /* Minimum font size to prevent zoom on iOS */
+    font-size: 14px; /* Minimum font size to prevent zoom on iOS */
 }
 
 #send-button {
