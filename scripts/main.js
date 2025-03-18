@@ -108,7 +108,7 @@ setTimeout(() => {
             const userMessage = chatInput.value.trim();
             
             // Add user message to chat
-            addMessage(userMessage, 'user');
+            addMessage(userMessage.toLowerCase(), 'user');
             
             // Disable input while "AI" is typing
             chatInput.disabled = true;
@@ -179,6 +179,15 @@ setTimeout(() => {
                     chatInput.focus(); // Added focus
                 }, getRandomDelay(1000, 1800)); // Increased reservation flow response delay
             }
+            if (!isAuthenticated) {
+                // ...
+                if (userMessage.toLowerCase() === '333') {
+                    // ...
+                }
+            } else {
+                // ...
+                handleReservationFlow(userMessage.toLowerCase());
+            }
             
             chatInput.value = '';
         }
@@ -189,14 +198,17 @@ setTimeout(() => {
     if (sendButton) {
         sendButton.addEventListener('click', function() {
             if (chatInput.value.trim() !== '') {
-                // Simulate an Enter keypress to reuse existing logic
+                // Force lowercase before dispatching event
+                chatInput.value = chatInput.value.toLowerCase();
+                
+                // Simulate an Enter keypress
                 const event = new KeyboardEvent('keypress', {
                     key: 'Enter'
                 });
                 chatInput.dispatchEvent(event);
             }
         });
-}
+    }
     
     // Function to show typing indicator
     function showTypingIndicator() {

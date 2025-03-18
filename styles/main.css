@@ -110,6 +110,7 @@ body.authenticated {
     box-sizing: border-box;
     /* Prevent zoom on focus for mobile devices */
     font-size: 14px; /* Minimum font size to prevent zoom on iOS */
+    text-transform: lowercase;
 }
 
 #send-button {
