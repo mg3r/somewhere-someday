@@ -1,7 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     const supabaseUrl = 'https://kwmsqwfemtfupfesaxqd.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3bXNxd2ZlbXRmdXBmZXNheHFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIzMDkyMjUsImV4cCI6MjA1Nzg4NTIyNX0.IVVp2qhVbwpwT_QCZpOE5mtWn-JojX8t2DTBPRqlKSo';
-    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+    // Fixed initialization - using window.supabase and renamed client
+    const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+    
     const triangleContainer = document.getElementById('triangle-container');
     const triangle = document.getElementById('triangle');
     const chatContainer = document.getElementById('chat-container');
@@ -22,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to save reservation data to Supabase
     async function saveReservationToSupabase(reservation) {
         // This uses the Supabase client to insert a new record in the 'reservations' table
-        const { data, error } = await supabase
+        const { data, error } = await supabaseClient
             .from('reservations') // 'reservations' is the name of your table in Supabase
             .insert([reservation]); // Pass the reservation object
         
