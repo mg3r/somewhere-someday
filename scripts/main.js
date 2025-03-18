@@ -84,7 +84,7 @@ setTimeout(() => {
                 setTimeout(() => {
                     // Show the first message with event details
                     removeTypingIndicator(firstTypingIndicator);
-                    addMessage("somewhere: emissary at 2032 p st nw, washington, dc 20036\nsomeday: april 5 2025", 'ai');
+                    addMessage("somewhere: xxx\nsomeday: april 5 2025", 'ai');
                     
                     // Show typing indicator for the password prompt
                     const passwordTypingIndicator = showTypingIndicator();
