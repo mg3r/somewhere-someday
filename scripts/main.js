@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     addMessage("enter the secret password", 'ai');
                     chatInput.disabled = false;
                     chatInput.focus();
-                }, getRandomDelay(1500, 2500)); // Increased initial delay
+                }, getRandomDelay(800, 1500)); // Increased initial delay
                 
             }, 10);
         }
@@ -129,14 +129,14 @@ document.addEventListener('DOMContentLoaded', function() {
                                     }, 3000); // Added extra pause between details and reservation typing
                                 }, getRandomDelay(2000, 3000)); // Increased details typing delay
                             }, 3000); // Added extra pause between welcome and details typing
-                        }, getRandomDelay(2000, 3000)); // Increased welcome typing delay
+                        }, getRandomDelay(800, 1500)); // Increased welcome typing delay
                     } else {
                         // Wrong password
                         addMessage("incorrect password. try again.", 'ai');
                         chatInput.disabled = false;
                         chatInput.focus(); // Added focus
                     }
-                }, getRandomDelay(1000, 1800)); // Slightly increased password check delay
+                }, getRandomDelay(800, 1500)); // Slightly increased password check delay
             } else {
                 // Handle reservation flow with delay
                 setTimeout(() => {
