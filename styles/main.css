@@ -26,10 +26,23 @@ body {
 #triangle {
     width: 200px;
     height: 173px;
-    cursor: pointer;
+    cursor: pointer; /* Base cursor */
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+#triangle:hover {
+    cursor: crosshair; /* Change to a cooler cursor on hover */
+    /* Alternative options:
+       cursor: pointer; (pointing hand)
+       cursor: none; (invisible cursor)
+       cursor: help; (question mark)
+       cursor: cell; (crosshair with dot)
+       cursor: alias; (link symbol)
+       cursor: all-scroll; (omnidirectional arrows)
+       cursor: zoom-in; (magnifying glass with plus)
+    */
 }
 
 #triangle svg {
