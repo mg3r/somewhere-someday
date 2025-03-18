@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     addMessage("enter the secret password", 'ai');
                     chatInput.disabled = false;
                     chatInput.focus();
-                }, getRandomDelay(800, 1500));
+                }, getRandomDelay(1500, 2500)); // Increased initial delay
                 
             }, 10);
         }
@@ -95,41 +95,48 @@ document.addEventListener('DOMContentLoaded', function() {
                         isAuthenticated = true;
                         document.body.classList.add('authenticated');
                         
-                        // First send welcome message
-                        let welcomeMessage = 'welcome. you found us. somewhere someday, we meet to express ourselves, create, and connect collectively. we explore the boundaries of freedom through music, food, dance, and art. we embrace limitless potential. you are invited to our next gathering. here are the details:';
-                        
-                        addMessage(welcomeMessage, 'ai');
-                        
-                        // Then show typing for event details with delay
-                        const detailsTypingIndicator = showTypingIndicator();
-                        
+                        // First send welcome message - with longer typing delay
+                        const welcomeTypingIndicator = showTypingIndicator();
                         setTimeout(() => {
-                            removeTypingIndicator(detailsTypingIndicator);
+                            removeTypingIndicator(welcomeTypingIndicator);
+                            let welcomeMessage = 'welcome. you found us. somewhere someday, we meet to express ourselves, create, and connect collectively. we explore the boundaries of freedom through music, food, dance, and art. we embrace limitless potential. you are invited to our next gathering. here are the details:';
+                            addMessage(welcomeMessage, 'ai');
                             
-                            // Format event details as a separate message
-                            let detailsMessage = '';
-                            for (const [key, value] of Object.entries(eventDetails)) {
-                                detailsMessage += `${key}: ${value}\n`;
-                            }
-                            
-                            addMessage(detailsMessage, 'ai');
-                            
-                            // Start reservation flow with another delay
-                            const reservationTypingIndicator = showTypingIndicator();
+                            // Then show typing for event details with increased delay
                             setTimeout(() => {
-                                removeTypingIndicator(reservationTypingIndicator);
-                                startReservation();
-                                chatInput.disabled = false;
-                                chatInput.focus(); // Added focus
-                            }, getRandomDelay(1200, 2000));
-                        }, getRandomDelay(1800, 2500));
+                                const detailsTypingIndicator = showTypingIndicator();
+                                
+                                setTimeout(() => {
+                                    removeTypingIndicator(detailsTypingIndicator);
+                                    
+                                    // Format event details as a separate message
+                                    let detailsMessage = '';
+                                    for (const [key, value] of Object.entries(eventDetails)) {
+                                        detailsMessage += `${key}: ${value}\n`;
+                                    }
+                                    
+                                    addMessage(detailsMessage, 'ai');
+                                    
+                                    // Start reservation flow with another longer delay
+                                    setTimeout(() => {
+                                        const reservationTypingIndicator = showTypingIndicator();
+                                        setTimeout(() => {
+                                            removeTypingIndicator(reservationTypingIndicator);
+                                            startReservation();
+                                            chatInput.disabled = false;
+                                            chatInput.focus(); // Added focus
+                                        }, getRandomDelay(2000, 3000)); // Increased reservation prompt delay
+                                    }, 3000); // Added extra pause between details and reservation typing
+                                }, getRandomDelay(2000, 3000)); // Increased details typing delay
+                            }, 3000); // Added extra pause between welcome and details typing
+                        }, getRandomDelay(2000, 3000)); // Increased welcome typing delay
                     } else {
                         // Wrong password
                         addMessage("incorrect password. try again.", 'ai');
                         chatInput.disabled = false;
                         chatInput.focus(); // Added focus
                     }
-                }, getRandomDelay(800, 1500));
+                }, getRandomDelay(1000, 1800)); // Slightly increased password check delay
             } else {
                 // Handle reservation flow with delay
                 setTimeout(() => {
@@ -137,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     handleReservationFlow(userMessage);
                     chatInput.disabled = false;
                     chatInput.focus(); // Added focus
-                }, getRandomDelay(600, 1200));
+                }, getRandomDelay(1000, 1800)); // Increased reservation flow response delay
             }
             
             chatInput.value = '';
@@ -171,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
         reservationState.stage = "firstName";
         addMessage("to gain access to the event, a reservation is required. please enter your first name.", 'ai');
     }
-    
+        
     // Function to handle reservation flow
     function handleReservationFlow(userInput) {
         switch (reservationState.stage) {
