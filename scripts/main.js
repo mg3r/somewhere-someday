@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     const triangleContainer = document.getElementById('triangle-container');
+    const triangle = document.getElementById('triangle');
     const chatContainer = document.getElementById('chat-container');
     const chatInput = document.getElementById('chat-input');
     const chatHistory = document.getElementById('chat-history');
@@ -17,17 +18,23 @@ document.addEventListener('DOMContentLoaded', function() {
         contact: "text 555-333-3333 for more info"
     };
     
+    // Make sure triangle is visible
+    triangleContainer.style.display = 'flex';
+    
     // Make sure chat is hidden initially
     chatContainer.style.display = 'none';
     chatContainer.classList.add('hidden');
     
     // Show chat when clicking anywhere on the page
-    document.body.addEventListener('click', function() {
+    document.body.addEventListener('click', function(event) {
         if (chatContainer.classList.contains('hidden')) {
             chatContainer.style.display = 'block';
+            
+            // Small delay before removing the hidden class to trigger the transition
             setTimeout(() => {
                 chatContainer.classList.remove('hidden');
             }, 10);
+            
             chatInput.focus();
         }
     });
@@ -72,4 +79,9 @@ document.addEventListener('DOMContentLoaded', function() {
         chatHistory.appendChild(messageElement);
         chatHistory.scrollTop = chatHistory.scrollHeight;
     }
+    
+    // Prevent the chat container click from triggering body click
+    chatContainer.addEventListener('click', function(event) {
+        event.stopPropagation();
+    });
 });
