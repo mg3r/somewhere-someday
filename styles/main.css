@@ -34,13 +34,11 @@ body {
 
 /* Custom triangle cursor on hover */
 #triangle:hover {
-    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'><polygon points='8,0 16,16 0,16' fill='white'/></svg>") 8 16, auto;
-}
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'><polygon points='8,16 0,0 16,0' fill='white'/></svg>") 8 0, auto;}
 
 /* Keep triangle cursor after authentication */
 body.authenticated {
-    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'><polygon points='8,0 16,16 0,16' fill='white'/></svg>") 8 16, auto;
-}
+    cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'><polygon points='8,16 0,0 16,0' fill='white'/></svg>") 8 0, auto;}
 
 #triangle svg {
     width: 100%;
