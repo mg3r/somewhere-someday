@@ -93,7 +93,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (userMessage === '333') {
                         // Correct password with welcome message
                         isAuthenticated = true;
-                        document.body.classList.add('authenticated');
                         
                         // First send welcome message - with longer typing delay
                         const welcomeTypingIndicator = showTypingIndicator();
@@ -102,6 +101,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             let welcomeMessage = 'welcome. you found us. somewhere someday, we meet to express ourselves, create, and connect collectively. we explore the boundaries of freedom through music, food, dance, and art. we embrace limitless potential. you are invited to our next gathering. here are the details:';
                             addMessage(welcomeMessage, 'ai');
                             
+                            document.body.classList.add('authenticated');
+
                             // Then show typing for event details with increased delay
                             setTimeout(() => {
                                 const detailsTypingIndicator = showTypingIndicator();
