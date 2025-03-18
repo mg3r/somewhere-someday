@@ -10,15 +10,16 @@ document.addEventListener('DOMContentLoaded', function() {
         somewhere: "emissary at 2032 P St NW, Washington, DC 20036",
         someday: "april 5 2025",
         time: "6 pm to 12 pm",
-        info: "limited to 200 people, rsvp required",
+        info: "limited to 100 people, rsvp required",
     };
     
     // Track authentication and reservation states
     let isAuthenticated = false;
     let reservationState = {
-        stage: "initial", // Can be: initial, firstName, lastName, confirmation
+        stage: "initial", // Can be: initial, firstName, lastName, phoneNumber, verification, confirmation
         firstName: "",
         lastName: "",
+        phoneNumber: "",
         confirmed: null
     };
     
@@ -113,8 +114,40 @@ document.addEventListener('DOMContentLoaded', function() {
                 
             case "lastName":
                 reservationState.lastName = userInput.toLowerCase();
-                reservationState.stage = "confirmation";
-                addMessage(`thank you, ${reservationState.firstName}. please confirm your attendance by typing 'yes' or cancel by typing 'no'.`, 'ai');
+                reservationState.stage = "phoneNumber";
+                addMessage("please enter your phone number. include country code if international (e.g., +44 for UK).", 'ai');
+                break;
+                
+            case "phoneNumber":
+                // Store the original phone input
+                const phoneInput = userInput.trim();
+                
+                // Basic validation - must contain digits and be at least 7 characters
+                if (!/\d/.test(phoneInput) || phoneInput.length < 7) {
+                    addMessage("please enter a valid phone number. include country code if international.", 'ai');
+                    return; // Don't proceed to next stage
+                }
+                
+                reservationState.phoneNumber = phoneInput;
+                reservationState.stage = "verification";
+                
+                // Show all collected information for verification
+                const verificationMessage = `please verify your information:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm or 'edit' to make changes.`;
+                addMessage(verificationMessage, 'ai');
+                break;
+                
+            case "verification":
+                const verificationResponse = userInput.toLowerCase();
+                
+                if (verificationResponse === 'correct') {
+                    reservationState.stage = "confirmation";
+                    addMessage("thank you for verifying. please type 'yes' to complete your reservation or 'no' to cancel.", 'ai');
+                } else if (verificationResponse === 'edit') {
+                    reservationState.stage = "firstName";
+                    addMessage("let's update your information. please enter your first name.", 'ai');
+                } else {
+                    addMessage("please type 'correct' to confirm your information or 'edit' to make changes.", 'ai');
+                }
                 break;
                 
             case "confirmation":
@@ -126,6 +159,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const reservation = {
                         firstName: reservationState.firstName,
                         lastName: reservationState.lastName,
+                        phoneNumber: reservationState.phoneNumber,
                         timestamp: new Date().toISOString()
                     };
                     reservations.push(reservation);
@@ -137,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         console.error("Could not save to localStorage", e);
                     }
                     
-                    addMessage(`your reservation has been confirmed, ${reservationState.firstName}. we look forward to seeing you. check your text messages for additional details closer to the date.`, 'ai');
+                    addMessage(`your reservation has been confirmed, ${reservationState.firstName}. we look forward to seeing you. you will receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`, 'ai');
                 } else if (response === 'no') {
                     reservationState.confirmed = false;
                     addMessage("we understand. come back later if you change your mind.", 'ai');
@@ -157,6 +191,27 @@ document.addEventListener('DOMContentLoaded', function() {
             default:
                 addMessage("i'm not sure what you're asking. if you need help, please text the contact number provided in the event details.", 'ai');
         }
+    }
+    
+    // Helper function to format phone numbers for display
+    function formatPhoneNumber(phoneNumberString) {
+        // Check if it's an international number (starts with + or 00)
+        if (phoneNumberString.startsWith('+') || phoneNumberString.startsWith('00')) {
+            // For international numbers, just return as is
+            return phoneNumberString;
+        }
+        
+        // For what seems like US numbers, format with hyphens
+        const cleaned = ('' + phoneNumberString).replace(/\D/g, '');
+        
+        // Check if it's a 10-digit US number
+        const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
+        if (match) {
+            return match[1] + '-' + match[2] + '-' + match[3];
+        }
+        
+        // For anything else, return as is
+        return phoneNumberString;
     }
     
     function addMessage(text, sender) {
