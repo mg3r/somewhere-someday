@@ -17,8 +17,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const eventDetails = {
         somewhere: "emissary at 2032 p st nw, washington, dc 20036",
         someday: "april 5 2025",
-        time: "18:00 to 24:00",
-        info: "limited to 100 people. come as you are."
+        sometime: "18:00 to 24:00",
+        somemore: "music. djs. art. dance. food. social. come as you are. free your mind. try something new. limited to 100 people."
     };
     
     // Function to save reservation data to Supabase
@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         const welcomeTypingIndicator = showTypingIndicator();
                         setTimeout(() => {
                             removeTypingIndicator(welcomeTypingIndicator);
-                            let welcomeMessage = 'welcome. you found us. somewhere someday, we meet to express ourselves, create, and connect collectively. we explore the boundaries of freedom through music, food, dance, and art. we embrace limitless potential. you are invited to our next gathering. here are the details:';
+                            let welcomeMessage = 'welcome. you found us. somewhere someday, we host events to express, create, and connect collectively. we explore the boundaries of freedom. we embrace limitless potential. here are the details of our next event:';
                             addMessage(welcomeMessage, 'ai');
                             
                             document.body.classList.add('authenticated');
@@ -212,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to start the reservation process
     function startReservation() {
         reservationState.stage = "firstName";
-        addMessage("to gain access to the event, a reservation is required. please enter your first name.", 'ai');
+        addMessage("to gain access, you'll need to reserve your attendance. please enter your first name.", 'ai');
     }
         
     // Function to handle reservation flow
@@ -253,10 +253,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 if (verificationResponse === 'correct') {
                     reservationState.stage = "confirmation";
-                    addMessage("thank you for verifying. type 'yes' to complete your reservation or 'no' to cancel.", 'ai');
+                    addMessage("thank you for verifying. type 'yes' to secure your place or 'no' to cancel.", 'ai');
                 } else if (verificationResponse === 'edit') {
                     reservationState.stage = "firstName";
-                    addMessage("let's update your information. please enter your first name.", 'ai');
+                    addMessage("let's update your information. please enter your first name again.", 'ai');
                 } else {
                     addMessage("type 'correct' to confirm your information or 'edit' to make changes.", 'ai');
                 }
@@ -283,7 +283,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         // This executes if the save was successful
                         setTimeout(() => {
                             removeTypingIndicator(savingTypingIndicator);
-                            addMessage(`your reservation has been confirmed, ${reservationState.firstName}. we look forward to seeing you. you will receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`, 'ai');
+                            addMessage(`you're in, ${reservationState.firstName}. we look forward to seeing you. you'll receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`, 'ai');
                             chatInput.disabled = false;
                             chatInput.focus();
                         }, getRandomDelay(800, 1500));
@@ -294,7 +294,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Still show success to the user even if the database save failed
                         setTimeout(() => {
                             removeTypingIndicator(savingTypingIndicator);
-                            addMessage(`your reservation has been confirmed, ${reservationState.firstName}. we look forward to seeing you. you will receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`, 'ai');
+                            addMessage(`you're in, ${reservationState.firstName}. we look forward to seeing you. you'll receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`, 'ai');
                             chatInput.disabled = false;
                             chatInput.focus();
                         }, getRandomDelay(800, 1500));
