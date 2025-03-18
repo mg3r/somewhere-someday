@@ -7,15 +7,12 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Event details that will be shown after correct password
     const eventDetails = {
-        name: "Somewhere Someday",
-        nextEvent: "March 21, 2025",
-        location: "Underground Warehouse, 123 Hidden Street",
-        time: "10 PM - 6 AM",
-        lineup: "DJ Aurora, Techno Collective, Ambient Division",
-        theme: "Nebular Dreams",
-        dresscode: "All white, reflective materials encouraged",
-        tickets: "Limited to 200 people, RSVP required",
-        contact: "text 555-333-3333 for more info"
+        name: "somewhere someday",
+        nextEvent: "april 5 2025",
+        location: "emissary at 2032 P St NW, Washington, DC 20036",
+        time: "6 pm to 12 pm",
+        info: "freedom of expression",
+        tickets: "limited to 200 people, rsvp required",
     };
     
     // Make sure triangle is visible
@@ -60,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     addMessage(detailsMessage, 'ai');
                 } else {
                     // Wrong password
-                    addMessage("Incorrect password. Please try again.", 'ai');
+                    addMessage("incorrect password. please try again.", 'ai');
                 }
             }, 500);
             
