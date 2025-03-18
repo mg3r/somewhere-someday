@@ -17,9 +17,9 @@ document.addEventListener('DOMContentLoaded', function() {
         someday: "april 5 2025",
         time: "18:00 to 24:00",
         info: "limited to 100 people. come as you are."
-    }; // <-- Fixed: Added closing brace and semicolon
+    };
     
-    // Function to save reservation data to Supabase - Moved to correct position
+    // Function to save reservation data to Supabase
     async function saveReservationToSupabase(reservation) {
         // This uses the Supabase client to insert a new record in the 'reservations' table
         const { data, error } = await supabase
@@ -246,60 +246,60 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 break;
                 
-                case "confirmation":
-                    const response = userInput.toLowerCase();
-                    if (response === 'yes') {
-                        reservationState.confirmed = true;
+            case "confirmation":
+                const response = userInput.toLowerCase();
+                if (response === 'yes') {
+                    reservationState.confirmed = true;
+                    
+                    // Show a typing indicator while saving
+                    const savingTypingIndicator = showTypingIndicator();
+                    
+                    // Create the reservation object with column names matching your Supabase table
+                    const reservation = {
+                        first_name: reservationState.firstName,
+                        last_name: reservationState.lastName,
+                        phone_number: reservationState.phoneNumber,
+                        created_at: new Date().toISOString()
+                    };
+                    
+                    // Store the reservation in Supabase - this is an asynchronous call
+                    saveReservationToSupabase(reservation).then(() => {
+                        // This executes if the save was successful
+                        setTimeout(() => {
+                            removeTypingIndicator(savingTypingIndicator);
+                            addMessage(`your reservation has been confirmed, ${reservationState.firstName}. we look forward to seeing you. you will receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`, 'ai');
+                            chatInput.disabled = false;
+                            chatInput.focus();
+                        }, getRandomDelay(800, 1500));
+                    }).catch(error => {
+                        // This executes if there was an error saving to Supabase
+                        console.error("Error saving to Supabase:", error);
                         
-                        // Show a typing indicator while saving
-                        const savingTypingIndicator = showTypingIndicator();
-                        
-                        // Create the reservation object with column names matching your Supabase table
-                        const reservation = {
-                            first_name: reservationState.firstName,
-                            last_name: reservationState.lastName,
-                            phone_number: reservationState.phoneNumber,
-                            created_at: new Date().toISOString()
-                        };
-                        
-                        // Store the reservation in Supabase - this is an asynchronous call
-                        saveReservationToSupabase(reservation).then(() => {
-                            // This executes if the save was successful
-                            setTimeout(() => {
-                                removeTypingIndicator(savingTypingIndicator);
-                                addMessage(`your reservation has been confirmed, ${reservationState.firstName}. we look forward to seeing you. you will receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`, 'ai');
-                                chatInput.disabled = false;
-                                chatInput.focus();
-                            }, getRandomDelay(800, 1500));
-                        }).catch(error => {
-                            // This executes if there was an error saving to Supabase
-                            console.error("Error saving to Supabase:", error);
-                            
-                            // Still show success to the user even if the database save failed
-                            setTimeout(() => {
-                                removeTypingIndicator(savingTypingIndicator);
-                                addMessage(`your reservation has been confirmed, ${reservationState.firstName}. we look forward to seeing you. you will receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`, 'ai');
-                                chatInput.disabled = false;
-                                chatInput.focus();
-                            }, getRandomDelay(800, 1500));
-                        });
-                        
-                        // Reset for potential future interactions
-                        reservationState.stage = "complete";
-                    } else if (response === 'no') {
-                        // Existing code for "no" response remains the same
-                        reservationState.confirmed = false;
-                        addMessage("we understand. come back later if you change your mind.", 'ai');
-                        chatInput.disabled = false;
-                        chatInput.focus();
-                    } else {
-                        // Existing code for invalid responses remains the same
-                        addMessage("please respond with 'yes' or 'no' to confirm your attendance.", 'ai');
-                        chatInput.disabled = false;
-                        chatInput.focus();
-                        return; // Don't change stage
-                    }
-                    break;
+                        // Still show success to the user even if the database save failed
+                        setTimeout(() => {
+                            removeTypingIndicator(savingTypingIndicator);
+                            addMessage(`your reservation has been confirmed, ${reservationState.firstName}. we look forward to seeing you. you will receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`, 'ai');
+                            chatInput.disabled = false;
+                            chatInput.focus();
+                        }, getRandomDelay(800, 1500));
+                    });
+                    
+                    // Reset for potential future interactions
+                    reservationState.stage = "complete";
+                } else if (response === 'no') {
+                    // Existing code for "no" response remains the same
+                    reservationState.confirmed = false;
+                    addMessage("we understand. come back later if you change your mind.", 'ai');
+                    chatInput.disabled = false;
+                    chatInput.focus();
+                } else {
+                    // Existing code for invalid responses remains the same
+                    addMessage("please respond with 'yes' or 'no' to confirm your attendance.", 'ai');
+                    chatInput.disabled = false;
+                    chatInput.focus();
+                    return; // Don't change stage
+                }
+                break;
                 
             case "complete":
                 addMessage("your reservation process is complete. if you have any questions, please text the contact number provided in the event details.", 'ai');
