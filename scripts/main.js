@@ -71,21 +71,32 @@ document.addEventListener('DOMContentLoaded', function() {
             chatContainer.style.display = 'block';
             
             // Small delay before removing the hidden class to trigger the transition
-            setTimeout(() => {
-                chatContainer.classList.remove('hidden');
-                
-                // Show typing indicator for initial message with delay
-                const typingIndicator = showTypingIndicator();
-                
-                // Disable input while initial message is being typed
-                chatInput.disabled = true;
-                
+            // Inside the document.body.addEventListener('click') function, where you show the chat
+setTimeout(() => {
+    chatContainer.classList.remove('hidden');
+    
+    // Show typing indicator for the first message with delay
+    const firstTypingIndicator = showTypingIndicator();
+    
+    // Disable input while messages are being typed
+    chatInput.disabled = true;
+    
                 setTimeout(() => {
-                    removeTypingIndicator(typingIndicator);
-                    addMessage("enter the secret password", 'ai');
-                    chatInput.disabled = false;
-                    chatInput.focus();
-                }, getRandomDelay(800, 1500)); // Increased initial delay
+                    // Show the first message with event details
+                    removeTypingIndicator(firstTypingIndicator);
+                    addMessage("somewhere: emissary at 2032 p st nw, washington, dc 20036\nsomeday: april 5 2025", 'ai');
+                    
+                    // Show typing indicator for the password prompt
+                    const passwordTypingIndicator = showTypingIndicator();
+                    
+                    setTimeout(() => {
+                        removeTypingIndicator(passwordTypingIndicator);
+                        addMessage("enter the secret password to continue", 'ai');
+                        chatInput.disabled = false;
+                        chatInput.focus();
+                    }, getRandomDelay(800, 1500));
+                    
+                }, getRandomDelay(800, 1500));
                 
             }, 10);
         }
