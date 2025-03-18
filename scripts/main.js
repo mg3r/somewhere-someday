@@ -188,7 +188,7 @@ setTimeout(() => {
                 // ...
                 handleReservationFlow(userMessage.toLowerCase());
             }
-            
+
             chatInput.value = '';
         }
     });
@@ -247,10 +247,25 @@ setTimeout(() => {
                 addMessage("please enter your last name.", 'ai');
                 break;
                 
+            // Find the handleReservationFlow function and update the lastName case:
+
             case "lastName":
                 reservationState.lastName = userInput.toLowerCase();
                 reservationState.stage = "phoneNumber";
-                addMessage("please enter your phone number. include country code if international (e.g., +44 for UK).", 'ai');
+                
+                // Add typing indicator for phone number request
+                const phoneTypingIndicator = showTypingIndicator();
+                
+                // Delay the phone number request message
+                setTimeout(() => {
+                    removeTypingIndicator(phoneTypingIndicator);
+                    addMessage("please enter your phone number. include country code if international (e.g., +44 for UK).", 'ai');
+                    chatInput.disabled = false;
+                    chatInput.focus();
+                }, getRandomDelay(1000, 1800)); // Add appropriate delay
+                
+                // Disable input while "typing"
+                chatInput.disabled = true;
                 break;
                 
             case "phoneNumber":
