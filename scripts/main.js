@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const supabaseUrl = 'https://kwmsqwfemtfupfesaxqd.supabase.co'; // Replace with your actual URL from Supabase dashboard
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3bXNxd2ZlbXRmdXBmZXNheHFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIzMDkyMjUsImV4cCI6MjA1Nzg4NTIyNX0.IVVp2qhVbwpwT_QCZpOE5mtWn-JojX8t2DTBPRqlKSo'; // Replace with your actual key
+    const supabaseUrl = 'https://kwmsqwfemtfupfesaxqd.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3bXNxd2ZlbXRmdXBmZXNheHFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIzMDkyMjUsImV4cCI6MjA1Nzg4NTIyNX0.IVVp2qhVbwpwT_QCZpOE5mtWn-JojX8t2DTBPRqlKSo';
     const supabase = supabase.createClient(supabaseUrl, supabaseKey);
     const triangleContainer = document.getElementById('triangle-container');
     const triangle = document.getElementById('triangle');
@@ -17,8 +17,9 @@ document.addEventListener('DOMContentLoaded', function() {
         someday: "april 5 2025",
         time: "18:00 to 24:00",
         info: "limited to 100 people. come as you are."
-
-    // Function to save reservation data to Supabase
+    }; // <-- Fixed: Added closing brace and semicolon
+    
+    // Function to save reservation data to Supabase - Moved to correct position
     async function saveReservationToSupabase(reservation) {
         // This uses the Supabase client to insert a new record in the 'reservations' table
         const { data, error } = await supabase
@@ -32,8 +33,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Return the data (this will contain the newly created record)
         return data;
-}
-    };
+    }
     
     // Track authentication and reservation states
     let isAuthenticated = false;
