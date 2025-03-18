@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to start the reservation process
     function startReservation() {
         reservationState.stage = "firstName";
-        addMessage("would you like to make a reservation? please enter your first name.", 'ai');
+        addMessage("to reserve your attendance, please enter your first name", 'ai');
     }
     
     // Function to handle reservation flow
@@ -108,13 +108,13 @@ document.addEventListener('DOMContentLoaded', function() {
             case "firstName":
                 reservationState.firstName = userInput.toLowerCase();
                 reservationState.stage = "lastName";
-                addMessage("thank you. please enter your last name.", 'ai');
+                addMessage("please enter your last name.", 'ai');
                 break;
                 
             case "lastName":
                 reservationState.lastName = userInput.toLowerCase();
                 reservationState.stage = "confirmation";
-                addMessage(`thank you, ${reservationState.firstName}. please confirm your reservation by typing 'yes' or cancel by typing 'no'.`, 'ai');
+                addMessage(`thank you, ${reservationState.firstName}. please confirm your attendance by typing 'yes' or cancel by typing 'no'.`, 'ai');
                 break;
                 
             case "confirmation":
@@ -137,10 +137,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         console.error("Could not save to localStorage", e);
                     }
                     
-                    addMessage(`your reservation has been confirmed, ${reservationState.firstName}. we look forward to seeing you at the event. check your text messages for additional details closer to the date.`, 'ai');
+                    addMessage(`your reservation has been confirmed, ${reservationState.firstName}. we look forward to seeing you. check your text messages for additional details closer to the date.`, 'ai');
                 } else if (response === 'no') {
                     reservationState.confirmed = false;
-                    addMessage("we understand. you can always come back later if you change your mind.", 'ai');
+                    addMessage("we understand. come back later if you change your mind.", 'ai');
                 } else {
                     addMessage("please respond with 'yes' or 'no' to confirm your reservation.", 'ai');
                     return; // Don't change stage
