@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
         somewhere: "emissary at 2032 P St NW, Washington, DC 20036",
         someday: "april 5 2025",
         time: "6 pm to 12 pm",
-        info: "limited to 100 people",
+        info: "limited to 100 people, come as you are",
     };
     
     // Track authentication and reservation states

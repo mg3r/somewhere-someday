@@ -10,7 +10,10 @@
     <div id="triangle-container">
         <div id="triangle">
             <svg viewBox="0 0 100 87" xmlns="http://www.w3.org/2000/svg" class="pulse">
-                <path d="M50 0 L100 87 L0 87 Z" fill="none" stroke="rgba(255, 255, 255, 0.9)" stroke-width="1.5" stroke-linejoin="round" />
+                <!-- Three individual lines instead of a path -->
+                <line x1="50" y1="0" x2="100" y2="87" stroke="rgba(255, 255, 255, 0.9)" stroke-width="1.5" />
+                <line x1="100" y1="87" x2="0" y2="87" stroke="rgba(255, 255, 255, 0.9)" stroke-width="1.5" />
+                <line x1="0" y1="87" x2="50" y2="0" stroke="rgba(255, 255, 255, 0.9)" stroke-width="1.5" />
             </svg>
         </div>
     </div>
