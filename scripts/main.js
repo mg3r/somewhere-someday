@@ -430,7 +430,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 setTimeout(() => {
                     removeTypingIndicator(completeTypingIndicator);
-                    addMessage("your reservation process is complete. if you have any questions, please text the contact number provided in the event details.", 'ai');
+                    addMessage("your reservation process is complete.", 'ai');
                     chatInput.disabled = false; // Re-enable input
                     chatInput.focus();
                 }, getRandomDelay(1000, 1800));
@@ -444,7 +444,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 setTimeout(() => {
                     removeTypingIndicator(defaultTypingIndicator);
-                    addMessage("i'm not sure what you're asking. if you need help, please text the contact number provided in the event details.", 'ai');
+                    addMessage("i'm not sure what you're asking.", 'ai');
                     chatInput.disabled = false; // Re-enable input
                     chatInput.focus();
                 }, getRandomDelay(1000, 1800));
