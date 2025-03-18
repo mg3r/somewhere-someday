@@ -7,10 +7,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Event details that will be shown after correct password
     const eventDetails = {
-        somewhere: "emissary at 2032 P St NW, Washington, DC 20036",
+        somewhere: "emissary at 2032 p st nw, washington, dc 20036",
         someday: "april 5 2025",
-        time: "6 pm to 12 pm",
-        info: "limited to 100 people, come as you are",
+        time: "18:00 to 24:00",
+        info: "limited to 100 people. come as you are.",
     };
     
     // Track authentication and reservation states
@@ -63,9 +63,18 @@ document.addEventListener('DOMContentLoaded', function() {
             // Add user message to chat
             addMessage(userMessage, 'user');
             
+            // Disable input while "AI" is typing
+            chatInput.disabled = true;
+            
+            // Show typing indicator
+            const typingIndicator = showTypingIndicator();
+            
             if (!isAuthenticated) {
-                // Check password
+                // Check password with delay
                 setTimeout(() => {
+                    // Remove typing indicator
+                    removeTypingIndicator(typingIndicator);
+                    
                     if (userMessage === '333') {
                         // Correct password with welcome message
                         isAuthenticated = true;
@@ -79,28 +88,58 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         addMessage(detailsMessage, 'ai');
                         
-                        // Start reservation flow
+                        // Start reservation flow with delay
+                        const newTypingIndicator = showTypingIndicator();
                         setTimeout(() => {
+                            removeTypingIndicator(newTypingIndicator);
                             startReservation();
-                        }, 1000);
+                            chatInput.disabled = false;
+                        }, 1500);
                     } else {
                         // Wrong password
                         addMessage("incorrect password. please try again.", 'ai');
+                        chatInput.disabled = false;
                     }
-                }, 500);
+                }, getRandomDelay(800, 1500));
             } else {
-                // Handle reservation flow
-                handleReservationFlow(userMessage);
+                // Handle reservation flow with delay
+                setTimeout(() => {
+                    removeTypingIndicator(typingIndicator);
+                    handleReservationFlow(userMessage);
+                    chatInput.disabled = false;
+                }, getRandomDelay(600, 1200));
             }
             
             chatInput.value = '';
         }
     });
     
+    // Function to show typing indicator
+    function showTypingIndicator() {
+        const typingElement = document.createElement('div');
+        typingElement.classList.add('message', 'ai-message', 'typing-indicator');
+        typingElement.innerHTML = '...';
+        chatHistory.appendChild(typingElement);
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+        return typingElement;
+    }
+    
+    // Function to remove typing indicator
+    function removeTypingIndicator(element) {
+        if (element && element.parentNode) {
+            element.parentNode.removeChild(element);
+        }
+    }
+    
+    // Function to get a random delay time within a range
+    function getRandomDelay(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    
     // Function to start the reservation process
     function startReservation() {
         reservationState.stage = "firstName";
-        addMessage("to gain access to the event, a reservation is required. please enter your first name.", 'ai');
+        addMessage("to gain access to the event, a reservation is required. please enter your first name", 'ai');
     }
     
     // Function to handle reservation flow
@@ -115,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function() {
             case "lastName":
                 reservationState.lastName = userInput.toLowerCase();
                 reservationState.stage = "phoneNumber";
-                addMessage("please enter your phone number. include country code if international.", 'ai');
+                addMessage("please enter your phone number. include country code if international (e.g., +44 for uk).", 'ai');
                 break;
                 
             case "phoneNumber":
@@ -185,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 break;
                 
             case "complete":
-                addMessage("your reservation process is complete.", 'ai');
+                addMessage("your reservation process is complete. if you have any questions, please text the contact number provided in the event details.", 'ai');
                 break;
                 
             default:
@@ -195,23 +234,70 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Helper function to format phone numbers for display
     function formatPhoneNumber(phoneNumberString) {
-        // Check if it's an international number (starts with + or 00)
-        if (phoneNumberString.startsWith('+') || phoneNumberString.startsWith('00')) {
-            // For international numbers, just return as is
-            return phoneNumberString;
+        // Strip all non-digit characters except + for the analysis
+        const rawInput = phoneNumberString;
+        const digitsOnly = phoneNumberString.replace(/[^\d+]/g, '');
+        
+        // Handle US/Canada format (10 digits, may or may not start with +1)
+        if ((digitsOnly.length === 10 && !digitsOnly.startsWith('+')) || 
+            (digitsOnly.length === 11 && digitsOnly.startsWith('1')) ||
+            (digitsOnly.length === 12 && digitsOnly.startsWith('+1'))) {
+            
+            // Extract the 10 digits (remove country code if present)
+            const last10 = digitsOnly.slice(-10);
+            const match = last10.match(/^(\d{3})(\d{3})(\d{4})$/);
+            if (match) {
+                // If it had a +1, preserve it
+                const countryCode = digitsOnly.startsWith('+') ? '+1 ' : '';
+                return countryCode + match[1] + '-' + match[2] + '-' + match[3];
+            }
         }
         
-        // For what seems like US numbers, format with hyphens
-        const cleaned = ('' + phoneNumberString).replace(/\D/g, '');
-        
-        // Check if it's a 10-digit US number
-        const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
-        if (match) {
-            return match[1] + '-' + match[2] + '-' + match[3];
+        // Handle UK format (starts with +44, followed by 10 digits)
+        if (digitsOnly.startsWith('+44') && digitsOnly.length === 13) {
+            return '+44 ' + digitsOnly.slice(3, 7) + '-' + digitsOnly.slice(7);
         }
         
-        // For anything else, return as is
-        return phoneNumberString;
+        // Handle Australian format (starts with +61, followed by 9 digits)
+        if (digitsOnly.startsWith('+61') && digitsOnly.length === 12) {
+            return '+61 ' + digitsOnly.slice(3, 5) + '-' + digitsOnly.slice(5);
+        }
+        
+        // Handle common European formats
+        // e.g., Germany +49, France +33, Spain +34, Italy +39
+        const europeanPrefixes = ['+49', '+33', '+34', '+39'];
+        for (const prefix of europeanPrefixes) {
+            if (digitsOnly.startsWith(prefix)) {
+                // Format as +XX XXX-XXX-XXX
+                const afterPrefix = digitsOnly.slice(prefix.length);
+                if (afterPrefix.length >= 9) {
+                    return prefix + ' ' + afterPrefix.slice(0, 3) + '-' + 
+                           afterPrefix.slice(3, 6) + '-' + afterPrefix.slice(6);
+                }
+            }
+        }
+        
+        // For any other international format, try to add some spacing
+        if (digitsOnly.startsWith('+') && digitsOnly.length > 7) {
+            // Extract country code (typically 1-3 digits after the +)
+            const match = digitsOnly.match(/^\+(\d{1,3})(\d+)$/);
+            if (match) {
+                const countryCode = match[1];
+                const restOfNumber = match[2];
+                
+                // Split the rest into chunks of 3-4 digits
+                if (restOfNumber.length <= 7) {
+                    return '+' + countryCode + ' ' + restOfNumber;
+                } else {
+                    const firstPart = restOfNumber.slice(0, Math.ceil(restOfNumber.length / 2));
+                    const secondPart = restOfNumber.slice(Math.ceil(restOfNumber.length / 2));
+                    return '+' + countryCode + ' ' + firstPart + '-' + secondPart;
+                }
+            }
+        }
+        
+        // If all else fails, return the original input
+        return rawInput;
     }
     
     function addMessage(text, sender) {
