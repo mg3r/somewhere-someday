@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
         somewhere: "emissary at 2032 P St NW, Washington, DC 20036",
         someday: "april 5 2025",
         time: "6 pm to 12 pm",
-        info: "limited to 100 people, rsvp required",
+        info: "limited to 100 people",
     };
     
     // Track authentication and reservation states
@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to start the reservation process
     function startReservation() {
         reservationState.stage = "firstName";
-        addMessage("to gain access to the event, a reservation is required. please enter your first name", 'ai');
+        addMessage("to gain access to the event, a reservation is required. please enter your first name.", 'ai');
     }
     
     // Function to handle reservation flow
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
             case "lastName":
                 reservationState.lastName = userInput.toLowerCase();
                 reservationState.stage = "phoneNumber";
-                addMessage("please enter your phone number. include country code if international (e.g., +44 for UK).", 'ai');
+                addMessage("please enter your phone number. include country code if international.", 'ai');
                 break;
                 
             case "phoneNumber":
@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 break;
                 
             case "complete":
-                addMessage("your reservation process is complete. if you have any questions, please text the contact number provided in the event details.", 'ai');
+                addMessage("your reservation process is complete.", 'ai');
                 break;
                 
             default:
