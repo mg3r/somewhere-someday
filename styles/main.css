@@ -9,6 +9,8 @@ body {
     width: 100vw;
     overflow: hidden;
     font-family: 'Helvetica Neue', Arial, sans-serif;
+    /* Prevent font scaling in landscape while allowing zoom */
+    -webkit-text-size-adjust: 100%;
 }
 
 #triangle-container {
@@ -66,6 +68,16 @@ body.authenticated {
     backdrop-filter: blur(5px);
     transition: all 0.3s ease;
     z-index: 10;
+    /* Add some more margin for mobile */
+    max-height: 85vh;
+}
+
+@media (max-width: 480px) {
+    #chat-container {
+        width: 85%;
+        max-height: 80vh;
+        padding: 12px;
+    }
 }
 
 #chat-history {
@@ -79,16 +91,42 @@ body.authenticated {
     flex-direction: column;
 }
 
-#chat-input {
+/* Input group to contain both input and button */
+#chat-input-group {
+    display: flex;
     width: 100%;
+    gap: 8px;
+}
+
+#chat-input {
+    flex-grow: 1;
     padding: 10px;
     border: none;
     border-radius: 5px;
     background-color: rgba(50, 50, 50, 0.8);
     color: #ffffff;
-    font-size: 14px;
+    font-size: 16px; /* Slightly larger for mobile */
     outline: none;
     box-sizing: border-box;
+    /* Prevent zoom on focus for mobile devices */
+    font-size: 16px; /* Minimum font size to prevent zoom on iOS */
+}
+
+#send-button {
+    padding: 0 15px;
+    background-color: rgba(80, 80, 80, 0.8);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#send-button:hover {
+    background-color: rgba(100, 100, 100, 0.8);
 }
 
 .message {

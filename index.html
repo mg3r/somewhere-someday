@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Somewhere Someday</title>
     <link rel="stylesheet" href="/styles/main.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -23,7 +24,10 @@
         <div id="chat-history">
             <div class="message ai-message">enter the secret password</div>
         </div>
-        <input type="text" id="chat-input" placeholder="Type here..." autocomplete="off">
+        <div id="chat-input-group">
+            <input type="text" id="chat-input" placeholder="type here..." autocomplete="off">
+            <button id="send-button">send</button>
+        </div>
     </div>
 
     <script src="/scripts/main.js"></script>

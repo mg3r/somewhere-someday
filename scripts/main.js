@@ -172,6 +172,20 @@ document.addEventListener('DOMContentLoaded', function() {
             chatInput.value = '';
         }
     });
+
+    // Handler for send button
+    const sendButton = document.getElementById('send-button');
+    if (sendButton) {
+        sendButton.addEventListener('click', function() {
+            if (chatInput.value.trim() !== '') {
+                // Simulate an Enter keypress to reuse existing logic
+                const event = new KeyboardEvent('keypress', {
+                    key: 'Enter'
+                });
+                chatInput.dispatchEvent(event);
+            }
+        });
+}
     
     // Function to show typing indicator
     function showTypingIndicator() {
