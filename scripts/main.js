@@ -5,12 +5,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatInput = document.getElementById('chat-input');
     const chatHistory = document.getElementById('chat-history');
     
+    // Clear existing initial message if there is one
+    chatHistory.innerHTML = '';
+    
     // Event details that will be shown after correct password
     const eventDetails = {
         somewhere: "emissary at 2032 p st nw, washington, dc 20036",
         someday: "april 5 2025",
         time: "18:00 to 24:00",
-        info: "limited to 100 people. come as you are.",
+        info: "limited to 100 people. come as you are."
     };
     
     // Track authentication and reservation states
@@ -49,9 +52,21 @@ document.addEventListener('DOMContentLoaded', function() {
             // Small delay before removing the hidden class to trigger the transition
             setTimeout(() => {
                 chatContainer.classList.remove('hidden');
+                
+                // Show typing indicator for initial message with delay
+                const typingIndicator = showTypingIndicator();
+                
+                // Disable input while initial message is being typed
+                chatInput.disabled = true;
+                
+                setTimeout(() => {
+                    removeTypingIndicator(typingIndicator);
+                    addMessage("enter the secret password", 'ai');
+                    chatInput.disabled = false;
+                    chatInput.focus();
+                }, getRandomDelay(800, 1500));
+                
             }, 10);
-            
-            chatInput.focus();
         }
     });
     
@@ -80,21 +95,33 @@ document.addEventListener('DOMContentLoaded', function() {
                         isAuthenticated = true;
                         document.body.classList.add('authenticated');
                         
-                        let detailsMessage = 'welcome. you found us. somewhere someday we meet to express ourselves, create, and connect collectively. we explore the boundaries of freedom through music, food, dance, and art. we embrace limitless potential. here are the details of our next event:\n\n';
+                        // First send welcome message
+                        let welcomeMessage = 'welcome. you found us. somewhere someday we meet to express ourselves, create, and connect collectively. we explore the boundaries of freedom through music, food, dance, and art. we embrace limitless potential. here are the details of our next event:';
                         
-                        for (const [key, value] of Object.entries(eventDetails)) {
-                            detailsMessage += `${key}: ${value}\n`;
-                        }
+                        addMessage(welcomeMessage, 'ai');
                         
-                        addMessage(detailsMessage, 'ai');
+                        // Then show typing for event details with delay
+                        const detailsTypingIndicator = showTypingIndicator();
                         
-                        // Start reservation flow with delay
-                        const newTypingIndicator = showTypingIndicator();
                         setTimeout(() => {
-                            removeTypingIndicator(newTypingIndicator);
-                            startReservation();
-                            chatInput.disabled = false;
-                        }, 1500);
+                            removeTypingIndicator(detailsTypingIndicator);
+                            
+                            // Format event details as a separate message
+                            let detailsMessage = '';
+                            for (const [key, value] of Object.entries(eventDetails)) {
+                                detailsMessage += `${key}: ${value}\n`;
+                            }
+                            
+                            addMessage(detailsMessage, 'ai');
+                            
+                            // Start reservation flow with another delay
+                            const reservationTypingIndicator = showTypingIndicator();
+                            setTimeout(() => {
+                                removeTypingIndicator(reservationTypingIndicator);
+                                startReservation();
+                                chatInput.disabled = false;
+                            }, getRandomDelay(1200, 2000));
+                        }, getRandomDelay(1800, 2500));
                     } else {
                         // Wrong password
                         addMessage("incorrect password. please try again.", 'ai');
@@ -105,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Handle reservation flow with delay
                 setTimeout(() => {
                     removeTypingIndicator(typingIndicator);
-                    handleReservationFlow(userMessage);
+                    handleReservationFlow(userInput);
                     chatInput.disabled = false;
                 }, getRandomDelay(600, 1200));
             }
@@ -154,7 +181,7 @@ document.addEventListener('DOMContentLoaded', function() {
             case "lastName":
                 reservationState.lastName = userInput.toLowerCase();
                 reservationState.stage = "phoneNumber";
-                addMessage("please enter your phone number. include country code if international (e.g., +44 for uk).", 'ai');
+                addMessage("please enter your phone number. include country code if international (e.g., +44 for UK).", 'ai');
                 break;
                 
             case "phoneNumber":
