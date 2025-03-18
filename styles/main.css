@@ -35,12 +35,12 @@ body {
 #triangle svg {
     width: 100%;
     height: 100%;
-    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.7));
+    filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.7));
     transition: filter 0.5s ease;
 }
 
 #triangle svg:hover {
-    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.9));
+    filter: drop-shadow(0 0 50px rgba(255, 255, 255, 0.9));
 }
 
 #chat-container {
@@ -108,9 +108,9 @@ body {
 }
 
 @keyframes pulse {
-    0% { filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.6)); }
-    50% { filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.8)); }
-    100% { filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.6)); }
+    0% { filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.6)); }
+    50% { filter: drop-shadow(0 0 40px rgba(255, 255, 255, 0.8)); }
+    100% { filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.6)); }
 }
 
 .pulse {
@@ -128,4 +128,16 @@ html, body {
 /* Style for authenticated state */
 body.authenticated #triangle-container {
     opacity: 0.3;
+}
+
+/* Typing indicator animation */
+.typing-indicator {
+    opacity: 0.7;
+    animation: blink 1.2s infinite;
+}
+
+@keyframes blink {
+    0% { opacity: 0.3; }
+    50% { opacity: 0.7; }
+    100% { opacity: 0.3; }
 }
