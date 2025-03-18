@@ -71,75 +71,75 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Handle chat input
-    chatInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter' && chatInput.value.trim() !== '') {
-            const userMessage = chatInput.value.trim();
-            
-            // Add user message to chat
-            addMessage(userMessage, 'user');
-            
-            // Disable input while "AI" is typing
-            chatInput.disabled = true;
-            
-            // Show typing indicator
-            const typingIndicator = showTypingIndicator();
-            
-            if (!isAuthenticated) {
-                // Check password with delay
-                setTimeout(() => {
-                    // Remove typing indicator
-                    removeTypingIndicator(typingIndicator);
-                    
-                    if (userMessage === '333') {
-                        // Correct password with welcome message
-                        isAuthenticated = true;
-                        document.body.classList.add('authenticated');
+        chatInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && chatInput.value.trim() !== '') {
+                const userMessage = chatInput.value.trim();
+                
+                // Add user message to chat
+                addMessage(userMessage, 'user');
+                
+                // Disable input while "AI" is typing
+                chatInput.disabled = true;
+                
+                // Show typing indicator
+                const typingIndicator = showTypingIndicator();
+                
+                if (!isAuthenticated) {
+                    // Check password with delay
+                    setTimeout(() => {
+                        // Remove typing indicator
+                        removeTypingIndicator(typingIndicator);
                         
-                        // First send welcome message
-                        let welcomeMessage = 'welcome. you found us. somewhere someday, we meet to express ourselves, create, and connect collectively. we explore the boundaries of freedom through music, food, dance, and art. we embrace limitless potential. you are invited to our next event. here are the details:';
-                        
-                        addMessage(welcomeMessage, 'ai');
-                        
-                        // Then show typing for event details with delay
-                        const detailsTypingIndicator = showTypingIndicator();
-                        
-                        setTimeout(() => {
-                            removeTypingIndicator(detailsTypingIndicator);
+                        if (userMessage === '333') {
+                            // Correct password with welcome message
+                            isAuthenticated = true;
+                            document.body.classList.add('authenticated');
                             
-                            // Format event details as a separate message
-                            let detailsMessage = '';
-                            for (const [key, value] of Object.entries(eventDetails)) {
-                                detailsMessage += `${key}: ${value}\n`;
-                            }
+                            // First send welcome message
+                            let welcomeMessage = 'welcome. you found us. somewhere someday we meet to express ourselves, create, and connect collectively. we explore the boundaries of freedom through music, food, dance, and art. we embrace limitless potential. here are the details of our next event:';
                             
-                            addMessage(detailsMessage, 'ai');
+                            addMessage(welcomeMessage, 'ai');
                             
-                            // Start reservation flow with another delay
-                            const reservationTypingIndicator = showTypingIndicator();
+                            // Then show typing for event details with delay
+                            const detailsTypingIndicator = showTypingIndicator();
+                            
                             setTimeout(() => {
-                                removeTypingIndicator(reservationTypingIndicator);
-                                startReservation();
-                                chatInput.disabled = false;
-                            }, getRandomDelay(1200, 2000));
-                        }, getRandomDelay(1800, 2500));
-                    } else {
-                        // Wrong password
-                        addMessage("incorrect password. please try again.", 'ai');
+                                removeTypingIndicator(detailsTypingIndicator);
+                                
+                                // Format event details as a separate message
+                                let detailsMessage = '';
+                                for (const [key, value] of Object.entries(eventDetails)) {
+                                    detailsMessage += `${key}: ${value}\n`;
+                                }
+                                
+                                addMessage(detailsMessage, 'ai');
+                                
+                                // Start reservation flow with another delay
+                                const reservationTypingIndicator = showTypingIndicator();
+                                setTimeout(() => {
+                                    removeTypingIndicator(reservationTypingIndicator);
+                                    startReservation();
+                                    chatInput.disabled = false;
+                                }, getRandomDelay(1200, 2000));
+                            }, getRandomDelay(1800, 2500));
+                        } else {
+                            // Wrong password
+                            addMessage("incorrect password. please try again.", 'ai');
+                            chatInput.disabled = false;
+                        }
+                    }, getRandomDelay(800, 1500));
+                } else {
+                    // Handle reservation flow with delay
+                    setTimeout(() => {
+                        removeTypingIndicator(typingIndicator);
+                        handleReservationFlow(userMessage); // <-- FIXED: Changed userInput to userMessage
                         chatInput.disabled = false;
-                    }
-                }, getRandomDelay(800, 1500));
-            } else {
-                // Handle reservation flow with delay
-                setTimeout(() => {
-                    removeTypingIndicator(typingIndicator);
-                    handleReservationFlow(userInput);
-                    chatInput.disabled = false;
-                }, getRandomDelay(600, 1200));
+                    }, getRandomDelay(600, 1200));
+                }
+                
+                chatInput.value = '';
             }
-            
-            chatInput.value = '';
-        }
-    });
+        });
     
     // Function to show typing indicator
     function showTypingIndicator() {
