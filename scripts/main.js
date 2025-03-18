@@ -71,16 +71,15 @@ document.addEventListener('DOMContentLoaded', function() {
             chatContainer.style.display = 'block';
             
             // Small delay before removing the hidden class to trigger the transition
-            // Inside the document.body.addEventListener('click') function, where you show the chat
-setTimeout(() => {
-    chatContainer.classList.remove('hidden');
-    
-    // Show typing indicator for the first message with delay
-    const firstTypingIndicator = showTypingIndicator();
-    
-    // Disable input while messages are being typed
-    chatInput.disabled = true;
-    
+            setTimeout(() => {
+                chatContainer.classList.remove('hidden');
+                
+                // Show typing indicator for the first message with delay
+                const firstTypingIndicator = showTypingIndicator();
+                
+                // Disable input while messages are being typed
+                chatInput.disabled = true;
+                
                 setTimeout(() => {
                     // Show the first message with event details
                     removeTypingIndicator(firstTypingIndicator);
@@ -104,84 +103,85 @@ setTimeout(() => {
     
     // Handle chat input
     chatInput.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter' && chatInput.value.trim() !== '') {
-        const userMessage = chatInput.value.trim().toLowerCase(); // Convert to lowercase immediately
-        
-        // Add user message to chat
-        addMessage(userMessage, 'user');
-        
-        // Disable input while "AI" is typing
-        chatInput.disabled = true;
-        
-        // Show typing indicator
-        const typingIndicator = showTypingIndicator();
-        
-        if (!isAuthenticated) {
-            // Check password with delay
-            setTimeout(() => {
-                // Remove typing indicator
-                removeTypingIndicator(typingIndicator);
-                
-                if (userMessage === '333') {
-                    // Correct password with welcome message
-                    isAuthenticated = true;
+        if (e.key === 'Enter' && chatInput.value.trim() !== '') {
+            const userMessage = chatInput.value.trim().toLowerCase(); // Convert to lowercase immediately
+            
+            // Add user message to chat
+            addMessage(userMessage, 'user');
+            
+            // Disable input while "AI" is typing
+            chatInput.disabled = true;
+            
+            // Show typing indicator
+            const typingIndicator = showTypingIndicator();
+            
+            if (!isAuthenticated) {
+                // Check password with delay
+                setTimeout(() => {
+                    // Remove typing indicator
+                    removeTypingIndicator(typingIndicator);
                     
-                    // First send welcome message - with longer typing delay
-                    const welcomeTypingIndicator = showTypingIndicator();
-                    setTimeout(() => {
-                        removeTypingIndicator(welcomeTypingIndicator);
-                        let welcomeMessage = 'welcome. you found us. somewhere someday, we host events to express, create, and connect collectively. we explore the boundaries of freedom. we embrace limitless potential. here are the details of our next event:';
-                        addMessage(welcomeMessage, 'ai');
+                    if (userMessage === '333') {
+                        // Correct password with welcome message
+                        isAuthenticated = true;
                         
-                        document.body.classList.add('authenticated');
-
-                        // Then show typing for event details with increased delay
+                        // First send welcome message - with longer typing delay
+                        const welcomeTypingIndicator = showTypingIndicator();
                         setTimeout(() => {
-                            const detailsTypingIndicator = showTypingIndicator();
+                            removeTypingIndicator(welcomeTypingIndicator);
+                            let welcomeMessage = 'welcome. you found us. somewhere someday, we host events to express, create, and connect collectively. we explore the boundaries of freedom. we embrace limitless potential. here are the details of our next event:';
+                            addMessage(welcomeMessage, 'ai');
                             
-                            setTimeout(() => {
-                                removeTypingIndicator(detailsTypingIndicator);
-                                
-                                // Format event details as a separate message
-                                let detailsMessage = '';
-                                for (const [key, value] of Object.entries(eventDetails)) {
-                                    detailsMessage += `${key}: ${value}\n`;
-                                }
-                                
-                                addMessage(detailsMessage, 'ai');
-                                
-                                // Start reservation flow with another longer delay
-                                setTimeout(() => {
-                                    const reservationTypingIndicator = showTypingIndicator();
-                                    setTimeout(() => {
-                                        removeTypingIndicator(reservationTypingIndicator);
-                                        startReservation();
-                                        chatInput.disabled = false;
-                                        chatInput.focus(); // Added focus
-                                    }, getRandomDelay(2000, 3000)); // Increased reservation prompt delay
-                                }, 3000); // Added extra pause between details and reservation typing
-                            }, getRandomDelay(2000, 3000)); // Increased details typing delay
-                        }, 3000); // Added extra pause between welcome and details typing
-                    }, getRandomDelay(800, 1500)); // Increased welcome typing delay
-                } else {
-                    // Wrong password
-                    addMessage("incorrect password. try again.", 'ai');
-                    chatInput.disabled = false;
-                    chatInput.focus(); // Added focus
-                }
-            }, getRandomDelay(800, 1500)); // Slightly increased password check delay
-        } else {
-            // Handle reservation flow with delay
-            setTimeout(() => {
-                removeTypingIndicator(typingIndicator);
-                handleReservationFlow(userMessage);
-                // Note: chatInput enabling is handled inside handleReservationFlow for cases with delays
-            }, getRandomDelay(1000, 1800)); // Increased reservation flow response delay
-        }
+                            document.body.classList.add('authenticated');
 
-        chatInput.value = '';
-    }
-});
+                            // Then show typing for event details with increased delay
+                            setTimeout(() => {
+                                const detailsTypingIndicator = showTypingIndicator();
+                                
+                                setTimeout(() => {
+                                    removeTypingIndicator(detailsTypingIndicator);
+                                    
+                                    // Format event details as a separate message
+                                    let detailsMessage = '';
+                                    for (const [key, value] of Object.entries(eventDetails)) {
+                                        detailsMessage += `${key}: ${value}\n`;
+                                    }
+                                    
+                                    addMessage(detailsMessage, 'ai');
+                                    
+                                    // Start reservation flow with another longer delay
+                                    setTimeout(() => {
+                                        const reservationTypingIndicator = showTypingIndicator();
+                                        setTimeout(() => {
+                                            removeTypingIndicator(reservationTypingIndicator);
+                                            startReservation();
+                                            chatInput.disabled = false;
+                                            chatInput.focus(); // Added focus
+                                        }, getRandomDelay(2000, 3000)); // Increased reservation prompt delay
+                                    }, 3000); // Added extra pause between details and reservation typing
+                                }, getRandomDelay(2000, 3000)); // Increased details typing delay
+                            }, 3000); // Added extra pause between welcome and details typing
+                        }, getRandomDelay(800, 1500)); // Increased welcome typing delay
+                    } else {
+                        // Wrong password
+                        addMessage("incorrect password. try again.", 'ai');
+                        chatInput.disabled = false;
+                        chatInput.focus(); // Added focus
+                    }
+                }, getRandomDelay(800, 1500)); // Slightly increased password check delay
+            } else {
+                // Handle reservation flow with delay
+                setTimeout(() => {
+                    removeTypingIndicator(typingIndicator);
+                    handleReservationFlow(userMessage);
+                    // Note: we DO NOT re-enable input here, as each step in handleReservationFlow 
+                    // handles its own input enabling at the appropriate time
+                }, getRandomDelay(1000, 1800)); // Increased reservation flow response delay
+            }
+
+            chatInput.value = '';
+        }
+    });
 
     // Handler for send button
     const sendButton = document.getElementById('send-button');
@@ -229,136 +229,127 @@ setTimeout(() => {
     }
         
     // Function to handle reservation flow
-    // Function to handle reservation flow
     function handleReservationFlow(userInput) {
-    switch (reservationState.stage) {
-        case "firstName":
-            reservationState.firstName = userInput.toLowerCase();
-            reservationState.stage = "lastName";
-            
-            // Add typing indicator for last name request
-            const lastNameTypingIndicator = showTypingIndicator();
-            
-            // Delay the last name request message
-            setTimeout(() => {
-                removeTypingIndicator(lastNameTypingIndicator);
-                addMessage("please enter your last name.", 'ai');
-                // Re-enable input after showing message
-                chatInput.disabled = false;
-                chatInput.focus();
-            }, getRandomDelay(1000, 1800));
-            
-            // Disable input while "typing"
-            chatInput.disabled = true;
-            break;
-            
-        case "lastName":
-            reservationState.lastName = userInput.toLowerCase();
-            reservationState.stage = "phoneNumber";
-            
-            // Add typing indicator for phone number request
-            const phoneTypingIndicator = showTypingIndicator();
-            
-            // Delay the phone number request message
-            setTimeout(() => {
-                removeTypingIndicator(phoneTypingIndicator);
-                addMessage("please enter your phone number. include country code if international (e.g., +44 for UK).", 'ai');
-                chatInput.disabled = false;
-                chatInput.focus();
-            }, getRandomDelay(1000, 1800));
-            
-            // Disable input while "typing"
-            chatInput.disabled = true;
-            break;
-            
-        case "phoneNumber":
-            // Store the original phone input
-            const phoneInput = userInput.trim();
-            
-            // Basic validation - must contain digits and be at least 7 characters
-            if (!/\d/.test(phoneInput) || phoneInput.length < 7) {
-                addMessage("please enter a valid phone number. include country code if international.", 'ai');
-                chatInput.disabled = false; // Make sure to re-enable here too
-                chatInput.focus();
-                return; // Don't proceed to next stage
-            }
-            
-            reservationState.phoneNumber = phoneInput;
-            reservationState.stage = "verification";
-            
-            // Add typing indicator for verification
-            const verifyTypingIndicator = showTypingIndicator();
-            
-            // Delay the verification message
-            setTimeout(() => {
-                removeTypingIndicator(verifyTypingIndicator);
-                // Show all collected information for verification
-                const verificationMessage = `please verify your information:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm or 'edit' to make changes.`;
-                addMessage(verificationMessage, 'ai');
-                chatInput.disabled = false;
-                chatInput.focus();
-            }, getRandomDelay(1000, 1800));
-            
-            // Disable input while "typing"
-            chatInput.disabled = true;
-            break;
-            
-        case "verification":
-            const verificationResponse = userInput.toLowerCase();
-            
-            if (verificationResponse === 'correct') {
-                reservationState.stage = "confirmation";
+        switch (reservationState.stage) {
+            case "firstName":
+                reservationState.firstName = userInput.toLowerCase();
+                reservationState.stage = "lastName";
                 
-                // Add typing indicator for confirmation prompt
-                const confirmTypingIndicator = showTypingIndicator();
+                // Add typing indicator for last name request
+                const lastNameTypingIndicator = showTypingIndicator();
                 
-                // Delay the confirmation message
+                // Delay the last name request message
                 setTimeout(() => {
-                    removeTypingIndicator(confirmTypingIndicator);
-                    addMessage("thank you for verifying. type 'yes' to secure your place at the event or 'no' to cancel.", 'ai');
-                    chatInput.disabled = false;
+                    removeTypingIndicator(lastNameTypingIndicator);
+                    addMessage("please enter your last name.", 'ai');
+                    chatInput.disabled = false; // Re-enable input
                     chatInput.focus();
                 }, getRandomDelay(1000, 1800));
                 
-                // Disable input while "typing"
-                chatInput.disabled = true;
-            } else if (verificationResponse === 'edit') {
-                reservationState.stage = "firstName";
+                // Input remains disabled while typing
+                break;
                 
-                // Add typing indicator for the edit message
-                const editTypingIndicator = showTypingIndicator();
+            case "lastName":
+                reservationState.lastName = userInput.toLowerCase();
+                reservationState.stage = "phoneNumber";
                 
-                // Delay the edit message
+                // Add typing indicator for phone number request
+                const phoneTypingIndicator = showTypingIndicator();
+                
+                // Delay the phone number request message
                 setTimeout(() => {
-                    removeTypingIndicator(editTypingIndicator);
-                    addMessage("let's update your information. please enter your first name again.", 'ai');
-                    chatInput.disabled = false;
+                    removeTypingIndicator(phoneTypingIndicator);
+                    addMessage("please enter your phone number. include country code if international (e.g., +44 for UK).", 'ai');
+                    chatInput.disabled = false; // Re-enable input
                     chatInput.focus();
                 }, getRandomDelay(1000, 1800));
                 
-                // Disable input while "typing"
-                chatInput.disabled = true;
-            } else {
-                // For invalid input, show typing indicator
-                const invalidTypingIndicator = showTypingIndicator();
+                // Input remains disabled while typing
+                break;
                 
-                // Delay the invalid input message
+            case "phoneNumber":
+                // Store the original phone input
+                const phoneInput = userInput.trim();
+                
+                // Basic validation - must contain digits and be at least 7 characters
+                if (!/\d/.test(phoneInput) || phoneInput.length < 7) {
+                    addMessage("please enter a valid phone number. include country code if international.", 'ai');
+                    chatInput.disabled = false; // Re-enable input for retry
+                    chatInput.focus();
+                    return; // Don't proceed to next stage
+                }
+                
+                reservationState.phoneNumber = phoneInput;
+                reservationState.stage = "verification";
+                
+                // Add typing indicator for verification message
+                const verifyTypingIndicator = showTypingIndicator();
+                
+                // Delay the verification message
                 setTimeout(() => {
-                    removeTypingIndicator(invalidTypingIndicator);
-                    addMessage("type 'correct' to confirm your information or 'edit' to make changes.", 'ai');
-                    chatInput.disabled = false;
+                    removeTypingIndicator(verifyTypingIndicator);
+                    // Show all collected information for verification
+                    const verificationMessage = `please verify your information:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm or 'edit' to make changes.`;
+                    addMessage(verificationMessage, 'ai');
+                    chatInput.disabled = false; // Re-enable input
                     chatInput.focus();
                 }, getRandomDelay(1000, 1800));
                 
-                // Disable input while "typing"
-                chatInput.disabled = true;
-            }
-            break;
-            
-        // Rest of your cases remain the same with the same pattern applied
+                // Input remains disabled while typing
+                break;
+                
+            case "verification":
+                const verificationResponse = userInput.toLowerCase();
+                
+                if (verificationResponse === 'correct') {
+                    reservationState.stage = "confirmation";
+                    
+                    // Add typing indicator for confirmation message
+                    const confirmTypingIndicator = showTypingIndicator();
+                    
+                    // Delay the confirmation message
+                    setTimeout(() => {
+                        removeTypingIndicator(confirmTypingIndicator);
+                        addMessage("thank you for verifying. type 'yes' to secure your place at the event or 'no' to cancel.", 'ai');
+                        chatInput.disabled = false; // Re-enable input
+                        chatInput.focus();
+                    }, getRandomDelay(1000, 1800));
+                    
+                    // Input remains disabled while typing
+                } else if (verificationResponse === 'edit') {
+                    reservationState.stage = "firstName";
+                    
+                    // Add typing indicator for edit message
+                    const editTypingIndicator = showTypingIndicator();
+                    
+                    // Delay the edit message
+                    setTimeout(() => {
+                        removeTypingIndicator(editTypingIndicator);
+                        addMessage("let's update your information. please enter your first name again.", 'ai');
+                        chatInput.disabled = false; // Re-enable input
+                        chatInput.focus();
+                    }, getRandomDelay(1000, 1800));
+                    
+                    // Input remains disabled while typing
+                } else {
+                    // For invalid responses, show typing indicator
+                    const invalidTypingIndicator = showTypingIndicator();
+                    
+                    // Delay the invalid response message
+                    setTimeout(() => {
+                        removeTypingIndicator(invalidTypingIndicator);
+                        addMessage("type 'correct' to confirm your information or 'edit' to make changes.", 'ai');
+                        chatInput.disabled = false; // Re-enable input
+                        chatInput.focus();
+                    }, getRandomDelay(1000, 1800));
+                    
+                    // Input remains disabled while typing
+                }
+                break;
                 
             case "confirmation":
                 const response = userInput.toLowerCase();
+                
                 if (response === 'yes') {
                     reservationState.confirmed = true;
                     
@@ -379,8 +370,11 @@ setTimeout(() => {
                         setTimeout(() => {
                             removeTypingIndicator(savingTypingIndicator);
                             addMessage(`you're in, ${reservationState.firstName}. we look forward to seeing you. you'll receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`, 'ai');
-                            chatInput.disabled = false;
+                            chatInput.disabled = false; // Re-enable input
                             chatInput.focus();
+                            
+                            // Reset for potential future interactions
+                            reservationState.stage = "complete";
                         }, getRandomDelay(800, 1500));
                     }).catch(error => {
                         // This executes if there was an error saving to Supabase
@@ -390,34 +384,73 @@ setTimeout(() => {
                         setTimeout(() => {
                             removeTypingIndicator(savingTypingIndicator);
                             addMessage(`you're in, ${reservationState.firstName}. we look forward to seeing you. you'll receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`, 'ai');
-                            chatInput.disabled = false;
+                            chatInput.disabled = false; // Re-enable input
                             chatInput.focus();
+                            
+                            // Reset for potential future interactions
+                            reservationState.stage = "complete";
                         }, getRandomDelay(800, 1500));
                     });
                     
-                    // Reset for potential future interactions
-                    reservationState.stage = "complete";
+                    // Input remains disabled while saving and typing
                 } else if (response === 'no') {
-                    // Existing code for "no" response remains the same
-                    reservationState.confirmed = false;
-                    addMessage("we understand. come back later if you change your mind.", 'ai');
-                    chatInput.disabled = false;
-                    chatInput.focus();
+                    // Show typing indicator for no response
+                    const noResponseTypingIndicator = showTypingIndicator();
+                    
+                    setTimeout(() => {
+                        removeTypingIndicator(noResponseTypingIndicator);
+                        addMessage("we understand. come back later if you change your mind.", 'ai');
+                        chatInput.disabled = false; // Re-enable input
+                        chatInput.focus();
+                        
+                        // Update state
+                        reservationState.confirmed = false;
+                        reservationState.stage = "complete";
+                    }, getRandomDelay(1000, 1800));
+                    
+                    // Input remains disabled while typing
                 } else {
-                    // Existing code for invalid responses remains the same
-                    addMessage("please respond with 'yes' or 'no' to confirm your attendance.", 'ai');
-                    chatInput.disabled = false;
-                    chatInput.focus();
-                    return; // Don't change stage
+                    // For invalid responses, show typing indicator
+                    const invalidResponseTypingIndicator = showTypingIndicator();
+                    
+                    setTimeout(() => {
+                        removeTypingIndicator(invalidResponseTypingIndicator);
+                        addMessage("please respond with 'yes' or 'no' to confirm your attendance.", 'ai');
+                        chatInput.disabled = false; // Re-enable input
+                        chatInput.focus();
+                    }, getRandomDelay(1000, 1800));
+                    
+                    // Input remains disabled while typing
                 }
                 break;
                 
             case "complete":
-                addMessage("your reservation process is complete. if you have any questions, please text the contact number provided in the event details.", 'ai');
+                // Show typing indicator for complete message
+                const completeTypingIndicator = showTypingIndicator();
+                
+                setTimeout(() => {
+                    removeTypingIndicator(completeTypingIndicator);
+                    addMessage("your reservation process is complete. if you have any questions, please text the contact number provided in the event details.", 'ai');
+                    chatInput.disabled = false; // Re-enable input
+                    chatInput.focus();
+                }, getRandomDelay(1000, 1800));
+                
+                // Input remains disabled while typing
                 break;
                 
             default:
-                addMessage("i'm not sure what you're asking. if you need help, please text the contact number provided in the event details.", 'ai');
+                // Show typing indicator for default message
+                const defaultTypingIndicator = showTypingIndicator();
+                
+                setTimeout(() => {
+                    removeTypingIndicator(defaultTypingIndicator);
+                    addMessage("i'm not sure what you're asking. if you need help, please text the contact number provided in the event details.", 'ai');
+                    chatInput.disabled = false; // Re-enable input
+                    chatInput.focus();
+                }, getRandomDelay(1000, 1800));
+                
+                // Input remains disabled while typing
+                break;
         }
     }
     
