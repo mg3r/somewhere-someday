@@ -1,7 +1,7 @@
 body {
     margin: 0;
     padding: 0;
-    background-color: #1a1a1a; /* Matte black, not completely black */
+    background-color: #1a1a1a;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -123,4 +123,9 @@ html, body {
     position: fixed;
     width: 100%;
     height: 100%;
+}
+
+/* Style for authenticated state */
+body.authenticated #triangle-container {
+    opacity: 0.3;
 }
