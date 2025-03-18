@@ -7,12 +7,10 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Event details that will be shown after correct password
     const eventDetails = {
-        name: "somewhere someday",
-        nextEvent: "april 5 2025",
-        location: "emissary at 2032 P St NW, Washington, DC 20036",
+        somewhere: "emissary at 2032 P St NW, Washington, DC 20036",
+        someday: "april 5 2025",
         time: "6 pm to 12 pm",
-        info: "freedom of expression",
-        tickets: "limited to 200 people, rsvp required",
+        info: "limited to 200 people, rsvp required",
     };
     
     // Make sure triangle is visible
@@ -47,8 +45,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // Process input and respond
             setTimeout(() => {
                 if (userMessage === '333') {
-                    // Correct password - all lowercase, no header
-                    let detailsMessage = '';
+                    // Correct password with welcome message
+                    let detailsMessage = 'welcome. you found us. somewhere someday, we meet to express ourselves freely as a collective. we explore the boundaries of freedom through music, food, dance, and art. \n\n';
                     
                     for (const [key, value] of Object.entries(eventDetails)) {
                         // Convert both key and value to lowercase
