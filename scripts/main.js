@@ -17,6 +17,10 @@ document.addEventListener('DOMContentLoaded', function() {
         contact: "text 555-333-3333 for more info"
     };
     
+    // Make sure chat is hidden initially
+    chatContainer.style.display = 'none';
+    chatContainer.classList.add('hidden');
+    
     // Show chat when clicking anywhere on the page
     document.body.addEventListener('click', function() {
         if (chatContainer.classList.contains('hidden')) {
