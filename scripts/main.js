@@ -229,12 +229,14 @@ setTimeout(() => {
     }
         
     // Function to handle reservation flow
+    // Function to handle reservation flow
     function handleReservationFlow(userInput) {
     switch (reservationState.stage) {
         case "firstName":
             reservationState.firstName = userInput.toLowerCase();
             reservationState.stage = "lastName";
-            // Add typing indicator
+            
+            // Add typing indicator for last name request
             const lastNameTypingIndicator = showTypingIndicator();
             
             // Delay the last name request message
@@ -250,60 +252,110 @@ setTimeout(() => {
             chatInput.disabled = true;
             break;
             
-        // Rest of your cases...
-                
-            // Find the handleReservationFlow function and update the lastName case:
-
-            case "lastName":
-                reservationState.lastName = userInput.toLowerCase();
-                reservationState.stage = "phoneNumber";
-                
-                // Add typing indicator for phone number request
-                const phoneTypingIndicator = showTypingIndicator();
-                
-                // Delay the phone number request message
-                setTimeout(() => {
-                    removeTypingIndicator(phoneTypingIndicator);
-                    addMessage("please enter your phone number. include country code if international (e.g., +44 for UK).", 'ai');
-                    chatInput.disabled = false;
-                    chatInput.focus();
-                }, getRandomDelay(1000, 1800)); // Add appropriate delay
-                
-                // Disable input while "typing"
-                chatInput.disabled = true;
-                break;
-                
-            case "phoneNumber":
-                // Store the original phone input
-                const phoneInput = userInput.trim();
-                
-                // Basic validation - must contain digits and be at least 7 characters
-                if (!/\d/.test(phoneInput) || phoneInput.length < 7) {
-                    addMessage("please enter a valid phone number. include country code if international.", 'ai');
-                    return; // Don't proceed to next stage
-                }
-                
-                reservationState.phoneNumber = phoneInput;
-                reservationState.stage = "verification";
-                
+        case "lastName":
+            reservationState.lastName = userInput.toLowerCase();
+            reservationState.stage = "phoneNumber";
+            
+            // Add typing indicator for phone number request
+            const phoneTypingIndicator = showTypingIndicator();
+            
+            // Delay the phone number request message
+            setTimeout(() => {
+                removeTypingIndicator(phoneTypingIndicator);
+                addMessage("please enter your phone number. include country code if international (e.g., +44 for UK).", 'ai');
+                chatInput.disabled = false;
+                chatInput.focus();
+            }, getRandomDelay(1000, 1800));
+            
+            // Disable input while "typing"
+            chatInput.disabled = true;
+            break;
+            
+        case "phoneNumber":
+            // Store the original phone input
+            const phoneInput = userInput.trim();
+            
+            // Basic validation - must contain digits and be at least 7 characters
+            if (!/\d/.test(phoneInput) || phoneInput.length < 7) {
+                addMessage("please enter a valid phone number. include country code if international.", 'ai');
+                chatInput.disabled = false; // Make sure to re-enable here too
+                chatInput.focus();
+                return; // Don't proceed to next stage
+            }
+            
+            reservationState.phoneNumber = phoneInput;
+            reservationState.stage = "verification";
+            
+            // Add typing indicator for verification
+            const verifyTypingIndicator = showTypingIndicator();
+            
+            // Delay the verification message
+            setTimeout(() => {
+                removeTypingIndicator(verifyTypingIndicator);
                 // Show all collected information for verification
                 const verificationMessage = `please verify your information:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm or 'edit' to make changes.`;
                 addMessage(verificationMessage, 'ai');
-                break;
+                chatInput.disabled = false;
+                chatInput.focus();
+            }, getRandomDelay(1000, 1800));
+            
+            // Disable input while "typing"
+            chatInput.disabled = true;
+            break;
+            
+        case "verification":
+            const verificationResponse = userInput.toLowerCase();
+            
+            if (verificationResponse === 'correct') {
+                reservationState.stage = "confirmation";
                 
-            case "verification":
-                const verificationResponse = userInput.toLowerCase();
+                // Add typing indicator for confirmation prompt
+                const confirmTypingIndicator = showTypingIndicator();
                 
-                if (verificationResponse === 'correct') {
-                    reservationState.stage = "confirmation";
+                // Delay the confirmation message
+                setTimeout(() => {
+                    removeTypingIndicator(confirmTypingIndicator);
                     addMessage("thank you for verifying. type 'yes' to secure your place at the event or 'no' to cancel.", 'ai');
-                } else if (verificationResponse === 'edit') {
-                    reservationState.stage = "firstName";
+                    chatInput.disabled = false;
+                    chatInput.focus();
+                }, getRandomDelay(1000, 1800));
+                
+                // Disable input while "typing"
+                chatInput.disabled = true;
+            } else if (verificationResponse === 'edit') {
+                reservationState.stage = "firstName";
+                
+                // Add typing indicator for the edit message
+                const editTypingIndicator = showTypingIndicator();
+                
+                // Delay the edit message
+                setTimeout(() => {
+                    removeTypingIndicator(editTypingIndicator);
                     addMessage("let's update your information. please enter your first name again.", 'ai');
-                } else {
+                    chatInput.disabled = false;
+                    chatInput.focus();
+                }, getRandomDelay(1000, 1800));
+                
+                // Disable input while "typing"
+                chatInput.disabled = true;
+            } else {
+                // For invalid input, show typing indicator
+                const invalidTypingIndicator = showTypingIndicator();
+                
+                // Delay the invalid input message
+                setTimeout(() => {
+                    removeTypingIndicator(invalidTypingIndicator);
                     addMessage("type 'correct' to confirm your information or 'edit' to make changes.", 'ai');
-                }
-                break;
+                    chatInput.disabled = false;
+                    chatInput.focus();
+                }, getRandomDelay(1000, 1800));
+                
+                // Disable input while "typing"
+                chatInput.disabled = true;
+            }
+            break;
+            
+        // Rest of your cases remain the same with the same pattern applied
                 
             case "confirmation":
                 const response = userInput.toLowerCase();
