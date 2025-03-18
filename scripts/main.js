@@ -47,16 +47,17 @@ document.addEventListener('DOMContentLoaded', function() {
             // Process input and respond
             setTimeout(() => {
                 if (userMessage === '333') {
-                    // Correct password
-                    let detailsMessage = `✨ Event Details ✨\n\n`;
+                    // Correct password - all lowercase, no header
+                    let detailsMessage = '';
                     
                     for (const [key, value] of Object.entries(eventDetails)) {
-                        detailsMessage += `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}\n`;
+                        // Convert both key and value to lowercase
+                        detailsMessage += `${key.toLowerCase()}: ${String(value).toLowerCase()}\n`;
                     }
                     
                     addMessage(detailsMessage, 'ai');
                 } else {
-                    // Wrong password
+                    // Wrong password - lowercase
                     addMessage("incorrect password. please try again.", 'ai');
                 }
             }, 500);
