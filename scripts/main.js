@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to start the reservation process
     function startReservation() {
         reservationState.stage = "firstName";
-        addMessage("to reserve your attendance, please enter your first name", 'ai');
+        addMessage("to gain access to the event, a reservation is required. please enter your first name", 'ai');
     }
     
     // Function to handle reservation flow
@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     reservationState.confirmed = false;
                     addMessage("we understand. come back later if you change your mind.", 'ai');
                 } else {
-                    addMessage("please respond with 'yes' or 'no' to confirm your reservation.", 'ai');
+                    addMessage("please respond with 'yes' or 'no' to confirm your attendance.", 'ai');
                     return; // Don't change stage
                 }
                 
