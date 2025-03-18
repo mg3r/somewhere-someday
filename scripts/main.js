@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             }, getRandomDelay(1800, 2500));
                         } else {
                             // Wrong password
-                            addMessage("incorrect password. please try again.", 'ai');
+                            addMessage("incorrect password. try again.", 'ai');
                             chatInput.disabled = false;
                         }
                     }, getRandomDelay(800, 1500));
@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 reservationState.stage = "verification";
                 
                 // Show all collected information for verification
-                const verificationMessage = `please verify your information:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm or 'edit' to make changes.`;
+                const verificationMessage = `verify your information:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm or 'edit' to make changes.`;
                 addMessage(verificationMessage, 'ai');
                 break;
                 
@@ -207,12 +207,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 if (verificationResponse === 'correct') {
                     reservationState.stage = "confirmation";
-                    addMessage("thank you for verifying. please type 'yes' to complete your reservation or 'no' to cancel.", 'ai');
+                    addMessage("thank you for verifying. type 'yes' to complete your reservation or 'no' to cancel.", 'ai');
                 } else if (verificationResponse === 'edit') {
                     reservationState.stage = "firstName";
                     addMessage("let's update your information. please enter your first name.", 'ai');
                 } else {
-                    addMessage("please type 'correct' to confirm your information or 'edit' to make changes.", 'ai');
+                    addMessage("type 'correct' to confirm your information or 'edit' to make changes.", 'ai');
                 }
                 break;
                 
