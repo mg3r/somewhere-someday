@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             document.body.classList.add('authenticated');
                             
                             // First send welcome message
-                            let welcomeMessage = 'welcome. you found us. somewhere someday we meet to express ourselves, create, and connect collectively. we explore the boundaries of freedom through music, food, dance, and art. we embrace limitless potential. here are the details of our next event:';
+                            let welcomeMessage = 'welcome. you found us. somewhere someday, we meet to express ourselves, create, and connect collectively. we explore the boundaries of freedom through music, food, dance, and art. we embrace limitless potential. you are invited to our next gathering. here are the details:';
                             
                             addMessage(welcomeMessage, 'ai');
                             
@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 reservationState.stage = "verification";
                 
                 // Show all collected information for verification
-                const verificationMessage = `verify your information:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm or 'edit' to make changes.`;
+                const verificationMessage = `please verify your information:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm or 'edit' to make changes.`;
                 addMessage(verificationMessage, 'ai');
                 break;
                 
