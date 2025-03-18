@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         isAuthenticated = true;
                         document.body.classList.add('authenticated');
                         
-                        let detailsMessage = 'welcome. you found us. somewhere someday, we meet to express ourselves freely as a collective. we explore the boundaries of freedom through music, food, dance, and art.\n\n';
+                        let detailsMessage = 'welcome. you found us. somewhere someday we meet to express ourselves, create, and connect collectively. we explore the boundaries of freedom through music, food, dance, and art. we embrace limitless potential. here are the details of our next event:\n\n';
                         
                         for (const [key, value] of Object.entries(eventDetails)) {
                             detailsMessage += `${key}: ${value}\n`;
