@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Somewhere Someday</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <div id="triangle-container">
+        <div id="triangle">
+            <svg viewBox="0 0 100 87" xmlns="http://www.w3.org/2000/svg" class="pulse">
+                <path d="M50 0 L100 87 L0 87 Z" fill="none" stroke="rgba(255, 255, 255, 0.8)" stroke-width="1" />
+            </svg>
+        </div>
+    </div>
+    
+    <div id="chat-container" class="hidden">
+        <div id="chat-history">
+            <div class="message ai-message">Enter the secret password</div>
+        </div>
+        <input type="text" id="chat-input" placeholder="Type here..." autocomplete="off">
+    </div>
+
+    <script src="scripts/main.js"></script>
+</body>
+</html>
