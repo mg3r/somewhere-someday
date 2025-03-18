@@ -230,12 +230,27 @@ setTimeout(() => {
         
     // Function to handle reservation flow
     function handleReservationFlow(userInput) {
-        switch (reservationState.stage) {
-            case "firstName":
-                reservationState.firstName = userInput.toLowerCase();
-                reservationState.stage = "lastName";
+    switch (reservationState.stage) {
+        case "firstName":
+            reservationState.firstName = userInput.toLowerCase();
+            reservationState.stage = "lastName";
+            // Add typing indicator
+            const lastNameTypingIndicator = showTypingIndicator();
+            
+            // Delay the last name request message
+            setTimeout(() => {
+                removeTypingIndicator(lastNameTypingIndicator);
                 addMessage("please enter your last name.", 'ai');
-                break;
+                // Re-enable input after showing message
+                chatInput.disabled = false;
+                chatInput.focus();
+            }, getRandomDelay(1000, 1800));
+            
+            // Disable input while "typing"
+            chatInput.disabled = true;
+            break;
+            
+        // Rest of your cases...
                 
             // Find the handleReservationFlow function and update the lastName case:
 
