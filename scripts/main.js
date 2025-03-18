@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 if (verificationResponse === 'correct') {
                     reservationState.stage = "confirmation";
-                    addMessage("thank you for verifying. type 'yes' to secure your place or 'no' to cancel.", 'ai');
+                    addMessage("thank you for verifying. type 'yes' to secure your place at the event or 'no' to cancel.", 'ai');
                 } else if (verificationResponse === 'edit') {
                     reservationState.stage = "firstName";
                     addMessage("let's update your information. please enter your first name again.", 'ai');
