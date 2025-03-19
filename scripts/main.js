@@ -304,35 +304,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (verificationResponse === 'correct') {
                     reservationState.stage = "confirmation";
                     
-                    // Create and show archive link if it doesn't exist
-                    let archiveLink = document.getElementById('archive-link');
-                    
-                    if (!archiveLink) {
-                        // Create the link if it doesn't exist
-                        archiveLink = document.createElement('a');
-                        archiveLink.id = 'archive-link';
-                        archiveLink.href = '/archive.html';
-                        archiveLink.textContent = 'archive';
-                        archiveLink.style.position = 'fixed';
-                        archiveLink.style.bottom = '20px';
-                        archiveLink.style.right = '20px';
-                        archiveLink.style.color = 'white';
-                        archiveLink.style.textDecoration = 'none';
-                        archiveLink.style.fontFamily = "'Helvetica Neue', Arial, sans-serif";
-                        archiveLink.style.fontSize = '14px';
-                        archiveLink.style.opacity = '0';
-                        archiveLink.style.transition = 'opacity 0.5s ease';
-                        archiveLink.style.zIndex = '20';
-                        
-                        document.body.appendChild(archiveLink);
-                    }
-                    
-                    // Show the link with a slight delay to ensure transition works
-                    setTimeout(() => {
-                        archiveLink.style.opacity = '1';
-                    }, 10);
-                    
-                    // Rest of your code...
+                    // Show the archive link
+                    const archiveLink = document.getElementById('archive-link');
+                    if (archiveLink) {
+                        archiveLink.classList.remove('hidden');
+                        archiveLink.classList.add('visible');
+                    }   
 
                     // Add typing indicator for confirmation message
                     const confirmTypingIndicator = showTypingIndicator();
