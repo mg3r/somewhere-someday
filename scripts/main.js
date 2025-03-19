@@ -304,6 +304,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (verificationResponse === 'correct') {
                     reservationState.stage = "confirmation";
                     
+                    // Show the archive link
+                    const archiveLink = document.getElementById('archive-link');
+                    if (archiveLink) {
+                        archiveLink.classList.add('visible');
+                    }    
+
                     // Add typing indicator for confirmation message
                     const confirmTypingIndicator = showTypingIndicator();
                     

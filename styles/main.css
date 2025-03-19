@@ -183,6 +183,23 @@ body.authenticated #triangle-container {
     animation: blink 1.2s infinite;
 }
 
+#archive-link {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    color: white;
+    text-decoration: none;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: 20;
+}
+
+#archive-link.visible {
+    opacity: 1;
+}
+
 @keyframes blink {
     0% { opacity: 0.3; }
     50% { opacity: 0.7; }
