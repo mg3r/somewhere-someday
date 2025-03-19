@@ -125,6 +125,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Correct password with welcome message
                         isAuthenticated = true;
                         
+                        // Show the archive link
+                        const archiveLink = document.getElementById('archive-link');
+                        if (archiveLink) {
+                            archiveLink.classList.remove('hidden');
+                            archiveLink.classList.add('visible');
+                        }
+                        
                         // First send welcome message - with longer typing delay
                         const welcomeTypingIndicator = showTypingIndicator();
                         setTimeout(() => {
@@ -274,7 +281,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Basic validation - must contain digits and be at least 7 characters
                 if (!/\d/.test(phoneInput) || phoneInput.length < 7) {
                     addMessage("please enter a valid phone number. include country code if international.", 'ai');
-                    chatInput.disabled = false; // Re-enable input for retry
+                    chatInput.disabled = false; // Re-enable input
                     chatInput.focus();
                     return; // Don't proceed to next stage
                 }
@@ -304,13 +311,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (verificationResponse === 'correct') {
                     reservationState.stage = "confirmation";
                     
-                    // Show the archive link
-                    const archiveLink = document.getElementById('archive-link');
-                    if (archiveLink) {
-                        archiveLink.classList.remove('hidden');
-                        archiveLink.classList.add('visible');
-                    }   
-
                     // Add typing indicator for confirmation message
                     const confirmTypingIndicator = showTypingIndicator();
                     
