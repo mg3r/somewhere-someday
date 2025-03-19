@@ -116,6 +116,7 @@
                 height: auto !important;
                 margin-bottom: 15px;
                 box-sizing: border-box;
+                order: 0; /* Default order - will be randomized by JS */
             }
             
             .image-item {
@@ -146,6 +147,38 @@
             }
         }
     </style>
+    <script>
+        // Wait for the DOM to be loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if we're on mobile based on screen width
+            if (window.innerWidth <= 768) {
+                randomizeElementsOrder();
+            }
+            
+            // Also listen for resize events in case of orientation changes
+            window.addEventListener('resize', function() {
+                if (window.innerWidth <= 768) {
+                    randomizeElementsOrder();
+                }
+            });
+            
+            function randomizeElementsOrder() {
+                const container = document.querySelector('.collage-container');
+                const items = Array.from(container.children);
+                
+                // Skip the first item if it's the back link
+                const startIndex = items[0].classList.contains('back-link') ? 1 : 0;
+                
+                // Assign random order values to all collage items
+                for (let i = startIndex; i < items.length; i++) {
+                    const item = items[i];
+                    if (item.classList.contains('collage-item')) {
+                        item.style.order = Math.floor(Math.random() * 100);
+                    }
+                }
+            }
+        });
+    </script>
 </head>
 <body>
     <a href="/" class="back-link">← back</a>
