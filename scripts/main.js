@@ -307,8 +307,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Show the archive link
                     const archiveLink = document.getElementById('archive-link');
                     if (archiveLink) {
+                        archiveLink.classList.remove('hidden');
                         archiveLink.classList.add('visible');
-                    }    
+                    }   
 
                     // Add typing indicator for confirmation message
                     const confirmTypingIndicator = showTypingIndicator();
