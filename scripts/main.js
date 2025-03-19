@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         const welcomeTypingIndicator = showTypingIndicator();
                         setTimeout(() => {
                             removeTypingIndicator(welcomeTypingIndicator);
-                            let welcomeMessage = 'welcome. you found us. somewhere someday, we host events to express, create, and connect collectively. we explore the boundaries of freedom. we embrace limitless potential. here are the details of our next event:';
+                            let welcomeMessage = 'welcome. you found us. somewhere someday, we host events to express, create, and connect. we explore the boundaries of freedom. we embrace limitless potential. here are the details of our next event:';
                             addMessage(welcomeMessage, 'ai');
                             
                             document.body.classList.add('authenticated');
