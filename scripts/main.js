@@ -304,162 +304,72 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Input remains disabled while typing
                 break;
-                
-            case "verification":
-                const verificationResponse = userInput.toLowerCase();
-                
-                if (verificationResponse === 'correct') {
-                    reservationState.stage = "confirmation";
+             
+                case "verification":
+                    const verificationResponse = userInput.toLowerCase();
                     
-                    // Add typing indicator for confirmation message
-                    const confirmTypingIndicator = showTypingIndicator();
-                    
-                    // Delay the confirmation message
-                    setTimeout(() => {
-                        removeTypingIndicator(confirmTypingIndicator);
-                        addMessage("thank you for verifying. type 'yes' to secure your place at the event or 'no' to cancel.", 'ai');
-                        chatInput.disabled = false; // Re-enable input
-                        chatInput.focus();
-                    }, getRandomDelay(1000, 1800));
-                    
-                    // Input remains disabled while typing
-                } else if (verificationResponse === 'edit') {
-                    reservationState.stage = "firstName";
-                    
-                    // Add typing indicator for edit message
-                    const editTypingIndicator = showTypingIndicator();
-                    
-                    // Delay the edit message
-                    setTimeout(() => {
-                        removeTypingIndicator(editTypingIndicator);
-                        addMessage("let's update your information. please enter your first name again.", 'ai');
-                        chatInput.disabled = false; // Re-enable input
-                        chatInput.focus();
-                    }, getRandomDelay(1000, 1800));
-                    
-                    // Input remains disabled while typing
-                } else {
-                    // For invalid responses, show typing indicator
-                    const invalidTypingIndicator = showTypingIndicator();
-                    
-                    // Delay the invalid response message
-                    setTimeout(() => {
-                        removeTypingIndicator(invalidTypingIndicator);
-                        addMessage("type 'correct' to confirm your information or 'edit' to make changes.", 'ai');
-                        chatInput.disabled = false; // Re-enable input
-                        chatInput.focus();
-                    }, getRandomDelay(1000, 1800));
-                    
-                    // Input remains disabled while typing
-                }
-                break;
-                
-            case "confirmation":
-                const response = userInput.toLowerCase();
-                
-                if (response === 'yes') {
-                    reservationState.confirmed = true;
-                    
-                    // Show a typing indicator while saving
-                    const savingTypingIndicator = showTypingIndicator();
-                    
-                    // Create the reservation object with column names matching your Supabase table
-                    const reservation = {
-                        first_name: reservationState.firstName,
-                        last_name: reservationState.lastName,
-                        phone_number: reservationState.phoneNumber,
-                        created_at: new Date().toISOString()
-                    };
-                    
-                    // Store the reservation in Supabase - this is an asynchronous call
-                    saveReservationToSupabase(reservation).then(() => {
-                        // This executes if the save was successful
+                    if (verificationResponse === 'correct') {
+                        // Add typing indicator for final confirmation message
+                        const confirmTypingIndicator = showTypingIndicator();
+                        
+                        // Create the reservation object with column names matching your Supabase table
+                        const reservation = {
+                            first_name: reservationState.firstName,
+                            last_name: reservationState.lastName,
+                            phone_number: reservationState.phoneNumber,
+                            created_at: new Date().toISOString()
+                        };
+                        
+                        // Delay the final confirmation message
                         setTimeout(() => {
-                            removeTypingIndicator(savingTypingIndicator);
-                            addMessage(`you're in, ${reservationState.firstName}. we look forward to seeing you. you'll receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`, 'ai');
+                            removeTypingIndicator(confirmTypingIndicator);
+                            
+                            // Attempt to save to Supabase
+                            saveReservationToSupabase(reservation).then(() => {
+                                addMessage(`you're in, ${reservationState.firstName}. we look forward to seeing you. you'll receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`, 'ai');
+                                reservationState.stage = "complete";
+                                reservationState.confirmed = true;
+                                chatInput.disabled = false;
+                                chatInput.focus();
+                            }).catch(error => {
+                                console.error("Error saving to Supabase:", error);
+                                
+                                // Still show success to the user even if the database save failed
+                                addMessage(`you're in, ${reservationState.firstName}. we look forward to seeing you. you'll receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`, 'ai');
+                                reservationState.stage = "complete";
+                                reservationState.confirmed = true;
+                                chatInput.disabled = false;
+                                chatInput.focus();
+                            });
+                        }, getRandomDelay(1000, 1800));
+                    } else if (verificationResponse === 'edit') {
+                        reservationState.stage = "firstName";
+                        
+                        // Add typing indicator for edit message
+                        const editTypingIndicator = showTypingIndicator();
+                        
+                        // Delay the edit message
+                        setTimeout(() => {
+                            removeTypingIndicator(editTypingIndicator);
+                            addMessage("let's update your information. please enter your first name again.", 'ai');
                             chatInput.disabled = false; // Re-enable input
                             chatInput.focus();
-                            
-                            // Reset for potential future interactions
-                            reservationState.stage = "complete";
-                        }, getRandomDelay(800, 1500));
-                    }).catch(error => {
-                        // This executes if there was an error saving to Supabase
-                        console.error("Error saving to Supabase:", error);
+                        }, getRandomDelay(1000, 1800));
+                    } else {
+                        // For invalid responses, show typing indicator
+                        const invalidTypingIndicator = showTypingIndicator();
                         
-                        // Still show success to the user even if the database save failed
+                        // Delay the invalid response message
                         setTimeout(() => {
-                            removeTypingIndicator(savingTypingIndicator);
-                            addMessage(`you're in, ${reservationState.firstName}. we look forward to seeing you. you'll receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`, 'ai');
+                            removeTypingIndicator(invalidTypingIndicator);
+                            addMessage("type 'correct' to confirm your information and attendance or 'edit' to make changes.", 'ai');
                             chatInput.disabled = false; // Re-enable input
                             chatInput.focus();
-                            
-                            // Reset for potential future interactions
-                            reservationState.stage = "complete";
-                        }, getRandomDelay(800, 1500));
-                    });
-                    
-                    // Input remains disabled while saving and typing
-                } else if (response === 'no') {
-                    // Show typing indicator for no response
-                    const noResponseTypingIndicator = showTypingIndicator();
-                    
-                    setTimeout(() => {
-                        removeTypingIndicator(noResponseTypingIndicator);
-                        addMessage("we understand. come back later if you change your mind.", 'ai');
-                        chatInput.disabled = false; // Re-enable input
-                        chatInput.focus();
-                        
-                        // Update state
-                        reservationState.confirmed = false;
-                        reservationState.stage = "complete";
-                    }, getRandomDelay(1000, 1800));
-                    
-                    // Input remains disabled while typing
-                } else {
-                    // For invalid responses, show typing indicator
-                    const invalidResponseTypingIndicator = showTypingIndicator();
-                    
-                    setTimeout(() => {
-                        removeTypingIndicator(invalidResponseTypingIndicator);
-                        addMessage("please respond with 'yes' or 'no' to confirm your attendance.", 'ai');
-                        chatInput.disabled = false; // Re-enable input
-                        chatInput.focus();
-                    }, getRandomDelay(1000, 1800));
-                    
-                    // Input remains disabled while typing
+                        }, getRandomDelay(1000, 1800));
+                    }
+                    break;
                 }
-                break;
-                
-            case "complete":
-                // Show typing indicator for complete message
-                const completeTypingIndicator = showTypingIndicator();
-                
-                setTimeout(() => {
-                    removeTypingIndicator(completeTypingIndicator);
-                    addMessage("your reservation process is complete.", 'ai');
-                    chatInput.disabled = false; // Re-enable input
-                    chatInput.focus();
-                }, getRandomDelay(1000, 1800));
-                
-                // Input remains disabled while typing
-                break;
-                
-            default:
-                // Show typing indicator for default message
-                const defaultTypingIndicator = showTypingIndicator();
-                
-                setTimeout(() => {
-                    removeTypingIndicator(defaultTypingIndicator);
-                    addMessage("i'm not sure what you're asking.", 'ai');
-                    chatInput.disabled = false; // Re-enable input
-                    chatInput.focus();
-                }, getRandomDelay(1000, 1800));
-                
-                // Input remains disabled while typing
-                break;
-        }
-    }
+            }    
     
     // Helper function to format phone numbers for display
     function formatPhoneNumber(phoneNumberString) {
