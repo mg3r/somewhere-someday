@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         const welcomeTypingIndicator = showTypingIndicator();
                         setTimeout(() => {
                             removeTypingIndicator(welcomeTypingIndicator);
-                            let welcomeMessage = 'welcome. you found us. somewhere someday, we host events to express, create, and connect. we explore the boundaries of freedom. we embrace limitless potential. here are the details of our next event:';
+                            let welcomeMessage = 'welcome. you found us. somewhere someday, we host events to express, create, and connect. here are the details of our next event:';
                             addMessage(welcomeMessage, 'ai');
                             
                             document.body.classList.add('authenticated');
@@ -296,7 +296,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => {
                     removeTypingIndicator(verifyTypingIndicator);
                     // Show all collected information for verification
-                    const verificationMessage = `please verify your information:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm or 'edit' to make changes.`;
+                    const verificationMessage = `please verify your information to confirm your attendance:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm or 'edit' to make changes.`;
                     addMessage(verificationMessage, 'ai');
                     chatInput.disabled = false; // Re-enable input
                     chatInput.focus();
@@ -309,10 +309,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     const verificationResponse = userInput.toLowerCase();
                     
                     if (verificationResponse === 'correct') {
-                        // Add typing indicator for final confirmation message
-                        const confirmTypingIndicator = showTypingIndicator();
+                        // Disable input immediately
+                        chatInput.disabled = true;
                         
-                        // Create the reservation object with column names matching your Supabase table
+                        // Create the reservation object
                         const reservation = {
                             first_name: reservationState.firstName,
                             last_name: reservationState.lastName,
@@ -320,28 +320,43 @@ document.addEventListener('DOMContentLoaded', function() {
                             created_at: new Date().toISOString()
                         };
                         
-                        // Delay the final confirmation message
-                        setTimeout(() => {
-                            removeTypingIndicator(confirmTypingIndicator);
-                            
-                            // Attempt to save to Supabase
-                            saveReservationToSupabase(reservation).then(() => {
+                        // Show typing indicator
+                        const confirmTypingIndicator = showTypingIndicator();
+                        
+                        // Save to Supabase
+                        saveReservationToSupabase(reservation)
+                            .then(() => {
+                                // Remove typing indicator
+                                removeTypingIndicator(confirmTypingIndicator);
+                                
+                                // Add confirmation message - all lowercase
                                 addMessage(`you're in, ${reservationState.firstName}. we look forward to seeing you. you'll receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`, 'ai');
+                                
+                                // Update reservation state
                                 reservationState.stage = "complete";
                                 reservationState.confirmed = true;
+                                
+                                // Re-enable input
                                 chatInput.disabled = false;
                                 chatInput.focus();
-                            }).catch(error => {
-                                console.error("Error saving to Supabase:", error);
+                            })
+                            .catch(error => {
+                                console.error("error saving to supabase:", error);
                                 
-                                // Still show success to the user even if the database save failed
+                                // Remove typing indicator
+                                removeTypingIndicator(confirmTypingIndicator);
+                                
+                                // Add confirmation message - all lowercase
                                 addMessage(`you're in, ${reservationState.firstName}. we look forward to seeing you. you'll receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`, 'ai');
+                                
+                                // Update reservation state
                                 reservationState.stage = "complete";
                                 reservationState.confirmed = true;
+                                
+                                // Re-enable input
                                 chatInput.disabled = false;
                                 chatInput.focus();
                             });
-                        }, getRandomDelay(1000, 1800));
                     } else if (verificationResponse === 'edit') {
                         reservationState.stage = "firstName";
                         
