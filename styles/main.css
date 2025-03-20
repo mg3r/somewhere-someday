@@ -200,6 +200,55 @@ body.authenticated #triangle-container {
     opacity: 1;
 }
 
+/* Mobile Triangle Click Indicator */
+#mobile-triangle-cue {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px; /* Smaller than the main triangle */
+    height: 34px; /* Maintain aspect ratio */
+    opacity: 0;
+    transition: opacity 1.5s ease;
+    z-index: 2;
+    pointer-events: none; /* So it doesn't interfere with clicks */
+    display: none; /* Hidden by default, shown only on mobile */
+}
+
+/* Show mobile cue only on mobile devices */
+@media (max-width: 768px) {
+    #mobile-triangle-cue {
+        display: block;
+    }
+}
+
+/* Animation for the mobile triangle cue */
+@keyframes fadeInPulse {
+    0% { 
+        opacity: 0; 
+        transform: translate(-50%, -50%) scale(0.8);
+    }
+    70% { 
+        opacity: 0.8; 
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+    100% { 
+        opacity: 0.6; 
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+/* Class to trigger animation */
+.show-mobile-cue {
+    animation: fadeInPulse 2s ease forwards, pulse 3s 2s infinite;
+}
+
+/* Ensure the regular triangle continues to have proper clickability */
+#triangle {
+    position: relative;
+    z-index: 3;
+}
+
 @keyframes blink {
     0% { opacity: 0.3; }
     50% { opacity: 0.7; }

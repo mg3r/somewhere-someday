@@ -10,6 +10,60 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatInput = document.getElementById('chat-input');
     const chatHistory = document.getElementById('chat-history');
     
+    // Create the mobile triangle cue element
+    const mobileTriangleCue = document.createElement('div');
+    mobileTriangleCue.id = 'mobile-triangle-cue';
+    
+    // Create SVG triangle similar to cursor triangle
+    mobileTriangleCue.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="100%" height="100%">
+            <polygon points="8,16 0,0 16,0" fill="white"/>
+        </svg>
+    `;
+    
+    // Add to triangle container
+    triangleContainer.appendChild(mobileTriangleCue);
+    
+    // Function to check if device is mobile
+    function isMobileDevice() {
+        return window.innerWidth <= 768;
+    }
+    
+    // Show the mobile triangle cue with a delay on mobile devices
+    if (isMobileDevice()) {
+        // Delay showing the cue to let the page load properly first
+        setTimeout(() => {
+            mobileTriangleCue.classList.add('show-mobile-cue');
+        }, 1000);
+    }
+    
+    // Hide the mobile cue when the chat is visible
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.attributeName === 'style' || mutation.attributeName === 'class') {
+                // If chat is visible, hide the mobile cue
+                if (chatContainer.style.display !== 'none' && !chatContainer.classList.contains('hidden')) {
+                    mobileTriangleCue.style.display = 'none';
+                }
+            }
+        });
+    });
+    
+    // Start observing the chat container
+    observer.observe(chatContainer, { attributes: true });
+    
+    // Also handle window resize events to show/hide based on viewport size
+    window.addEventListener('resize', function() {
+        if (isMobileDevice()) {
+            // Only show if chat isn't open yet
+            if (chatContainer.style.display === 'none' || chatContainer.classList.contains('hidden')) {
+                mobileTriangleCue.style.display = 'block';
+            }
+        } else {
+            mobileTriangleCue.style.display = 'none';
+        }
+    });
+    
     // Clear existing initial message if there is one
     chatHistory.innerHTML = '';
     
