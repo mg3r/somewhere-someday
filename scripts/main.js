@@ -93,6 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Track authentication and reservation states
     let isAuthenticated = false;
+    let isWaitlistFlow = false; // New flag to track waitlist flow
     let reservationState = {
         stage: "initial", // Can be: initial, firstName, lastName, phoneNumber, verification, confirmation
         firstName: "",
@@ -176,8 +177,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     removeTypingIndicator(typingIndicator);
                     
                     if (userMessage === '333') {
-                        // Correct password with welcome message
+                        // Correct password for direct invites
                         isAuthenticated = true;
+                        isWaitlistFlow = false;
                         
                         // Show the archive link
                         const archiveLink = document.getElementById('archive-link');
@@ -223,6 +225,55 @@ document.addEventListener('DOMContentLoaded', function() {
                                 }, getRandomDelay(2000, 3000)); // Increased details typing delay
                             }, 3000); // Added extra pause between welcome and details typing
                         }, getRandomDelay(800, 1500)); // Increased welcome typing delay
+                    } else if (userMessage === '111') {
+                        // Alternative password for public/QR code signups
+                        isAuthenticated = true;
+                        isWaitlistFlow = true; // Set waitlist flow flag
+                        
+                        // Show the archive link
+                        const archiveLink = document.getElementById('archive-link');
+                        if (archiveLink) {
+                            archiveLink.classList.remove('hidden');
+                            archiveLink.classList.add('visible');
+                        }
+                        
+                        // First send alternative welcome message
+                        const welcomeTypingIndicator = showTypingIndicator();
+                        setTimeout(() => {
+                            removeTypingIndicator(welcomeTypingIndicator);
+                            let welcomeMessage = 'welcome. you found us. somewhere someday, we host events to express, create, and connect. here are the details of our next event:';
+                            addMessage(welcomeMessage, 'ai');
+                            
+                            document.body.classList.add('authenticated');
+
+                            // Then show typing for event details
+                            setTimeout(() => {
+                                const detailsTypingIndicator = showTypingIndicator();
+                                
+                                setTimeout(() => {
+                                    removeTypingIndicator(detailsTypingIndicator);
+                                    
+                                    // Format event details as a separate message
+                                    let detailsMessage = '';
+                                    for (const [key, value] of Object.entries(eventDetails)) {
+                                        detailsMessage += `${key}: ${value}\n`;
+                                    }
+                                    
+                                    addMessage(detailsMessage, 'ai');
+                                    
+                                    // Start waitlist flow
+                                    setTimeout(() => {
+                                        const waitlistTypingIndicator = showTypingIndicator();
+                                        setTimeout(() => {
+                                            removeTypingIndicator(waitlistTypingIndicator);
+                                            startWaitlist(); // New function for waitlist flow
+                                            chatInput.disabled = false;
+                                            chatInput.focus();
+                                        }, getRandomDelay(2000, 3000));
+                                    }, 3000);
+                                }, getRandomDelay(2000, 3000));
+                            }, 3000);
+                        }, getRandomDelay(800, 1500));
                     } else {
                         // Wrong password
                         addMessage("incorrect password. try again.", 'ai');
@@ -283,10 +334,16 @@ document.addEventListener('DOMContentLoaded', function() {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
     
-    // Function to start the reservation process
+    // Function to start the reservation process for direct invites
     function startReservation() {
         reservationState.stage = "firstName";
         addMessage("to gain access, you'll need to reserve your attendance. please enter your first name.", 'ai');
+    }
+    
+    // Function to start the waitlist process for public/QR code signups
+    function startWaitlist() {
+        reservationState.stage = "firstName";
+        addMessage("our event is limited to 100 people. to join the waitlist, please enter your first name.", 'ai');
     }
         
     // Function to handle reservation flow
@@ -350,7 +407,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => {
                     removeTypingIndicator(verifyTypingIndicator);
                     // Show all collected information for verification
-                    const verificationMessage = `please verify your information to confirm your attendance:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm or 'edit' to make changes.`;
+                    let verificationMessage;
+                    
+                    if (isWaitlistFlow) {
+                        verificationMessage = `please verify your information for the waitlist:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm or 'edit' to make changes.`;
+                    } else {
+                        verificationMessage = `please verify your information to confirm your attendance:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm or 'edit' to make changes.`;
+                    }
+                    
                     addMessage(verificationMessage, 'ai');
                     chatInput.disabled = false; // Re-enable input
                     chatInput.focus();
@@ -371,7 +435,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             first_name: reservationState.firstName,
                             last_name: reservationState.lastName,
                             phone_number: reservationState.phoneNumber,
-                            created_at: new Date().toISOString()
+                            created_at: new Date().toISOString(),
+                            source: isWaitlistFlow ? 'public' : 'direct_invite' // Add source field
                         };
                         
                         // Show typing indicator
@@ -383,8 +448,16 @@ document.addEventListener('DOMContentLoaded', function() {
                                 // Remove typing indicator
                                 removeTypingIndicator(confirmTypingIndicator);
                                 
-                                // Add confirmation message - all lowercase
-                                addMessage(`you're in, ${reservationState.firstName}. we look forward to seeing you. you'll receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`, 'ai');
+                                // Add confirmation message based on flow
+                                let confirmationMessage;
+                                
+                                if (isWaitlistFlow) {
+                                    confirmationMessage = `you've been added to the waitlist, ${reservationState.firstName}. we'll text you at ${formatPhoneNumber(reservationState.phoneNumber)} if a spot becomes available.`;
+                                } else {
+                                    confirmationMessage = `you're in, ${reservationState.firstName}. we look forward to seeing you. you'll receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`;
+                                }
+                                
+                                addMessage(confirmationMessage, 'ai');
                                 
                                 // Update reservation state
                                 reservationState.stage = "complete";
@@ -400,8 +473,16 @@ document.addEventListener('DOMContentLoaded', function() {
                                 // Remove typing indicator
                                 removeTypingIndicator(confirmTypingIndicator);
                                 
-                                // Add confirmation message - all lowercase
-                                addMessage(`you're in, ${reservationState.firstName}. we look forward to seeing you. you'll receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`, 'ai');
+                                // Add confirmation message based on flow even if there's an error
+                                let confirmationMessage;
+                                
+                                if (isWaitlistFlow) {
+                                    confirmationMessage = `you've been added to the waitlist, ${reservationState.firstName}. we'll text you at ${formatPhoneNumber(reservationState.phoneNumber)} if a spot becomes available.`;
+                                } else {
+                                    confirmationMessage = `you're in, ${reservationState.firstName}. we look forward to seeing you. you'll receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`;
+                                }
+                                
+                                addMessage(confirmationMessage, 'ai');
                                 
                                 // Update reservation state
                                 reservationState.stage = "complete";
@@ -431,7 +512,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Delay the invalid response message
                         setTimeout(() => {
                             removeTypingIndicator(invalidTypingIndicator);
-                            addMessage("type 'correct' to confirm your information and attendance or 'edit' to make changes.", 'ai');
+                            addMessage("type 'correct' to confirm your information or 'edit' to make changes.", 'ai');
                             chatInput.disabled = false; // Re-enable input
                             chatInput.focus();
                         }, getRandomDelay(1000, 1800));
