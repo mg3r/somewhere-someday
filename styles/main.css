@@ -200,16 +200,16 @@ body.authenticated #triangle-container {
     opacity: 1;
 }
 
-/* Mobile Triangle Click Indicator */
+/* Mobile Triangle Click Indicator - Adjusted Position and Timing */
 #mobile-triangle-cue {
     position: absolute;
-    top: 50%;
+    top: 55%; /* Moved down from 50% to 55% to appear more centered in the main triangle */
     left: 50%;
     transform: translate(-50%, -50%);
     width: 40px; /* Smaller than the main triangle */
     height: 34px; /* Maintain aspect ratio */
     opacity: 0;
-    transition: opacity 1.5s ease;
+    transition: opacity 2.5s ease; /* Increased from 1.5s to 2.5s */
     z-index: 2;
     pointer-events: none; /* So it doesn't interfere with clicks */
     display: none; /* Hidden by default, shown only on mobile */
@@ -222,7 +222,7 @@ body.authenticated #triangle-container {
     }
 }
 
-/* Animation for the mobile triangle cue */
+/* Animation for the mobile triangle cue - Slowed down by 1 second */
 @keyframes fadeInPulse {
     0% { 
         opacity: 0; 
@@ -238,9 +238,9 @@ body.authenticated #triangle-container {
     }
 }
 
-/* Class to trigger animation */
+/* Class to trigger animation - Slowed down by 1 second */
 .show-mobile-cue {
-    animation: fadeInPulse 2s ease forwards, pulse 3s 2s infinite;
+    animation: fadeInPulse 3s ease forwards, pulse 3s 3s infinite; /* Changed from 2s to 3s, and delay from 2s to 3s */
 }
 
 /* Ensure the regular triangle continues to have proper clickability */
