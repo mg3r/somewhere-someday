@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
         somewhere: "emissary at 2032 p st nw, washington, dc 20036",
         someday: "april 5 2025",
         sometime: "18:00 to 24:00",
-        somemore: "music. djs. art. dance. food. social. come as you are. free your mind. try something new. limited to 100 people."
+        somemore: "music. djs. dance. art. food. drinks. social. come as you are. free your mind. try something new. limited to 100 people."
     };
     
     // Function to save reservation data to Supabase
