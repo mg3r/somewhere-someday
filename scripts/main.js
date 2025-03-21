@@ -237,24 +237,41 @@ document.addEventListener('DOMContentLoaded', function() {
                             archiveLink.classList.add('visible');
                         }
                         
-                        // First send alternative welcome message
+                        // First send welcome message - with longer typing delay
                         const welcomeTypingIndicator = showTypingIndicator();
                         setTimeout(() => {
                             removeTypingIndicator(welcomeTypingIndicator);
-                            // Modified welcome message - removed "here are the details of our next event"
-                            let welcomeMessage = 'welcome. you found us. somewhere someday, we host events to express, create, and connect.';
+                            // Step 1: Show the welcome message with "here are the details of our next event"
+                            let welcomeMessage = 'welcome. you found us. somewhere someday, we host events to express, create, and connect. here are the details of our next event:';
                             addMessage(welcomeMessage, 'ai');
                             
                             document.body.classList.add('authenticated');
 
-                            // Skip event details section completely and go directly to waitlist flow
+                            // Step 2: Show limited event details with increased delay
                             setTimeout(() => {
-                                const waitlistTypingIndicator = showTypingIndicator();
+                                const detailsTypingIndicator = showTypingIndicator();
+                                
                                 setTimeout(() => {
-                                    removeTypingIndicator(waitlistTypingIndicator);
-                                    startWaitlist(); // Start waitlist flow
-                                    chatInput.disabled = false;
-                                    chatInput.focus();
+                                    removeTypingIndicator(detailsTypingIndicator);
+                                    
+                                    // Format LIMITED event details as a separate message - excluding the location
+                                    let detailsMessage = 'somewhere: xxx\n';
+                                    detailsMessage += `someday: ${eventDetails.someday}\n`;
+                                    detailsMessage += `somemore: ${eventDetails.somemore}`;
+                                    
+                                    addMessage(detailsMessage, 'ai');
+                                    
+                                    // Step 3: Start waitlist flow with another longer delay
+                                    setTimeout(() => {
+                                        const waitlistTypingIndicator = showTypingIndicator();
+                                        setTimeout(() => {
+                                            removeTypingIndicator(waitlistTypingIndicator);
+                                            // We'll modify this message in the startWaitlist function
+                                            startWaitlist();
+                                            chatInput.disabled = false;
+                                            chatInput.focus();
+                                        }, getRandomDelay(2000, 3000));
+                                    }, 3000);
                                 }, getRandomDelay(2000, 3000));
                             }, 3000);
                         }, getRandomDelay(800, 1500));
@@ -334,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to start the waitlist process for public/QR code signups
     function startWaitlist() {
         reservationState.stage = "firstName";
-        addMessage("free your mind. try something new. to be a part of our next event, you'll need to request to join our guestlist. please enter your first name.", 'ai');
+        addMessage("to unlock updates, you'll need to request to join our guestlist. please enter your first name.", 'ai');
     }
         
     // Function to handle reservation flow
@@ -443,7 +460,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             let confirmationMessage;
                             
                             if (isWaitlistFlow) {
-                                confirmationMessage = `you're in the loop, ${reservationState.firstName}. we'll text you at ${formatPhoneNumber(reservationState.phoneNumber)} with updates about potential access as the april 5 event approaches.`;
+                                confirmationMessage = `you're in the loop, ${reservationState.firstName}. we'll text you at ${formatPhoneNumber(reservationState.phoneNumber)} with updates about potential access as the event approaches.`;
                             } else {
                                 confirmationMessage = `you're in, ${reservationState.firstName}. we look forward to seeing you. you'll receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`;
                             }
@@ -468,7 +485,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             let confirmationMessage;
                             
                             if (isWaitlistFlow) {
-                                confirmationMessage = `you're in the loop, ${reservationState.firstName}. we'll text you at ${formatPhoneNumber(reservationState.phoneNumber)} with updates about potential access as the april 5 event approaches.`;
+                                confirmationMessage = `you're in the loop, ${reservationState.firstName}. we'll text you at ${formatPhoneNumber(reservationState.phoneNumber)} with updates about potential access as the event approaches.`;
                             } else {
                                 confirmationMessage = `you're in, ${reservationState.firstName}. we look forward to seeing you. you'll receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`;
                             }
