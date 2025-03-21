@@ -622,66 +622,167 @@
         });
     }
     
-    // Function to search recipients
+    // Improved search recipients function
     async function searchRecipients() {
-      if (!supabaseClient) {
+    if (!supabaseClient) {
         alert('Please connect to Supabase first');
         return;
-      }
-      
-      const searchTerm = document.getElementById('recipient-search').value.trim().toLowerCase();
-      const searchResults = document.getElementById('search-results');
-      
-      if (!searchTerm) {
+    }
+    
+    const searchTerm = document.getElementById('recipient-search').value.trim();
+    const searchResults = document.getElementById('search-results');
+    
+    if (!searchTerm) {
         searchResults.innerHTML = '<p style="padding: 10px;">Please enter a search term</p>';
         return;
-      }
-      
-      searchResults.innerHTML = '<p style="padding: 10px;">Searching...</p>';
-      
-      try {
-        // Build a query with proper filtering for case-insensitive search
-        const { data, error } = await supabaseClient
-          .from('reservations')
-          .select('id, first_name, last_name, phone_number, source')
-          .or(`first_name.ilike.%${searchTerm}%,last_name.ilike.%${searchTerm}%,phone_number.ilike.%${searchTerm}%`);
+    }
+    
+    searchResults.innerHTML = '<p style="padding: 10px;">Searching...</p>';
+    
+    try {
+        console.log('Searching for:', searchTerm);
         
-        if (error) throw error;
+        // First try a simpler approach to see all available data
+        const { data: allData, error: allError } = await supabaseClient
+        .from('reservations')
+        .select('id, first_name, last_name, phone_number, source')
+        .limit(10);
         
-        if (!data || data.length === 0) {
-          searchResults.innerHTML = '<p style="padding: 10px;">No results found</p>';
-          return;
+        if (allError) {
+        console.error('Error accessing reservations table:', allError);
+        searchResults.innerHTML = `<p style="padding: 10px;">Error accessing database: ${allError.message}</p>`;
+        return;
         }
         
+        console.log('Sample data from reservations table:', allData);
+        
+        // Now perform the actual search
+        const { data, error } = await supabaseClient
+        .from('reservations')
+        .select('id, first_name, last_name, phone_number, source')
+        .or(
+            `first_name.ilike.%${searchTerm}%,` +
+            `last_name.ilike.%${searchTerm}%,` +
+            `phone_number.ilike.%${searchTerm}%`
+        );
+        
+        if (error) {
+        console.error('Search error:', error);
+        throw error;
+        }
+        
+        console.log('Search results:', data);
+        
+        if (!data || data.length === 0) {
+        // If no results with OR query, try individual field searches
+        console.log('No results with combined search, trying individual fields');
+        
+        const firstNameResults = await supabaseClient
+            .from('reservations')
+            .select('id, first_name, last_name, phone_number, source')
+            .ilike('first_name', `%${searchTerm}%`);
+            
+        const lastNameResults = await supabaseClient
+            .from('reservations')
+            .select('id, first_name, last_name, phone_number, source')
+            .ilike('last_name', `%${searchTerm}%`);
+            
+        const phoneResults = await supabaseClient
+            .from('reservations')
+            .select('id, first_name, last_name, phone_number, source')
+            .ilike('phone_number', `%${searchTerm}%`);
+        
+        console.log('First name results:', firstNameResults.data);
+        console.log('Last name results:', lastNameResults.data);
+        console.log('Phone results:', phoneResults.data);
+        
+        // Combine results from individual searches
+        const combinedResults = [
+            ...(firstNameResults.data || []),
+            ...(lastNameResults.data || []),
+            ...(phoneResults.data || [])
+        ];
+        
+        // Remove duplicates
+        const uniqueResults = [];
+        const ids = new Set();
+        combinedResults.forEach(item => {
+            if (!ids.has(item.id)) {
+            ids.add(item.id);
+            uniqueResults.push(item);
+            }
+        });
+        
+        if (uniqueResults.length === 0) {
+            searchResults.innerHTML = `
+            <p style="padding: 10px;">No results found for "${searchTerm}"</p>
+            <p style="padding: 10px; font-size: 12px;">
+                Make sure the "reservations" table has columns: 
+                id, first_name, last_name, phone_number, source
+            </p>
+            `;
+            return;
+        }
+        
+        // Display these results
+        searchResults.innerHTML = '';
+        
+        uniqueResults.forEach(person => {
+            // Skip if already selected
+            if (selectedRecipients.some(r => r.id === person.id)) {
+            return;
+            }
+            
+            const div = document.createElement('div');
+            div.className = 'recipient-item';
+            div.innerHTML = `
+            <div>
+                <strong>${person.first_name} ${person.last_name}</strong> 
+                <br>${person.phone_number} (${person.source === 'direct_invite' ? 'Direct Invite' : 'Waitlist'})
+            </div>
+            <button type="button" class="add-recipient-btn">Add</button>
+            `;
+            
+            div.querySelector('button').addEventListener('click', function() {
+            addSelectedRecipient(person);
+            div.remove();
+            });
+            
+            searchResults.appendChild(div);
+        });
+        
+        } else {
+        // Display original search results
         searchResults.innerHTML = '';
         
         data.forEach(person => {
-          // Skip if already selected
-          if (selectedRecipients.some(r => r.id === person.id)) {
+            // Skip if already selected
+            if (selectedRecipients.some(r => r.id === person.id)) {
             return;
-          }
-          
-          const div = document.createElement('div');
-          div.className = 'recipient-item';
-          div.innerHTML = `
+            }
+            
+            const div = document.createElement('div');
+            div.className = 'recipient-item';
+            div.innerHTML = `
             <div>
-              <strong>${person.first_name} ${person.last_name}</strong> 
-              <br>${person.phone_number} (${person.source === 'direct_invite' ? 'Direct Invite' : 'Waitlist'})
+                <strong>${person.first_name} ${person.last_name}</strong> 
+                <br>${person.phone_number} (${person.source === 'direct_invite' ? 'Direct Invite' : 'Waitlist'})
             </div>
             <button type="button" class="add-recipient-btn">Add</button>
-          `;
-          
-          div.querySelector('button').addEventListener('click', function() {
+            `;
+            
+            div.querySelector('button').addEventListener('click', function() {
             addSelectedRecipient(person);
             div.remove();
-          });
-          
-          searchResults.appendChild(div);
+            });
+            
+            searchResults.appendChild(div);
         });
-      } catch (error) {
+        }
+    } catch (error) {
         console.error('Error searching recipients:', error);
         searchResults.innerHTML = `<p style="padding: 10px;">Error: ${error.message}</p>`;
-      }
+    }
     }
     
     // Function to add selected recipient
