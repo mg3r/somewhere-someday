@@ -226,39 +226,39 @@ document.addEventListener('DOMContentLoaded', function() {
                             }, 3000); // Added extra pause between welcome and details typing
                         }, getRandomDelay(800, 1500)); // Increased welcome typing delay
                     } else if (userMessage === '111') {
-    // Alternative password for public/QR code signups
-    isAuthenticated = true;
-    isWaitlistFlow = true; // Set waitlist flow flag
-    
-    // Show the archive link
-    const archiveLink = document.getElementById('archive-link');
-    if (archiveLink) {
-        archiveLink.classList.remove('hidden');
-        archiveLink.classList.add('visible');
-    }
-    
-    // First send alternative welcome message
-    const welcomeTypingIndicator = showTypingIndicator();
-    setTimeout(() => {
-        removeTypingIndicator(welcomeTypingIndicator);
-        // Modified welcome message - removed "here are the details of our next event"
-        let welcomeMessage = 'welcome. you found us. somewhere someday, we host events to express, create, and connect.';
-        addMessage(welcomeMessage, 'ai');
-        
-        document.body.classList.add('authenticated');
+                        // Alternative password for public/QR code signups
+                        isAuthenticated = true;
+                        isWaitlistFlow = true; // Set waitlist flow flag
+                        
+                        // Show the archive link
+                        const archiveLink = document.getElementById('archive-link');
+                        if (archiveLink) {
+                            archiveLink.classList.remove('hidden');
+                            archiveLink.classList.add('visible');
+                        }
+                        
+                        // First send alternative welcome message
+                        const welcomeTypingIndicator = showTypingIndicator();
+                        setTimeout(() => {
+                            removeTypingIndicator(welcomeTypingIndicator);
+                            // Modified welcome message - removed "here are the details of our next event"
+                            let welcomeMessage = 'welcome. you found us. somewhere someday, we host events to express, create, and connect.';
+                            addMessage(welcomeMessage, 'ai');
+                            
+                            document.body.classList.add('authenticated');
 
-        // Skip event details section completely and go directly to waitlist flow
-        setTimeout(() => {
-            const waitlistTypingIndicator = showTypingIndicator();
-            setTimeout(() => {
-                removeTypingIndicator(waitlistTypingIndicator);
-                startWaitlist(); // Start waitlist flow
-                chatInput.disabled = false;
-                chatInput.focus();
-            }, getRandomDelay(2000, 3000));
-        }, 3000);
-    }, getRandomDelay(800, 1500));
-} else {
+                            // Skip event details section completely and go directly to waitlist flow
+                            setTimeout(() => {
+                                const waitlistTypingIndicator = showTypingIndicator();
+                                setTimeout(() => {
+                                    removeTypingIndicator(waitlistTypingIndicator);
+                                    startWaitlist(); // Start waitlist flow
+                                    chatInput.disabled = false;
+                                    chatInput.focus();
+                                }, getRandomDelay(2000, 3000));
+                            }, 3000);
+                        }, getRandomDelay(800, 1500));
+                    } else {
                         // Wrong password
                         addMessage("incorrect password. try again.", 'ai');
                         chatInput.disabled = false;
@@ -269,7 +269,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Handle reservation flow with delay
                 setTimeout(() => {
                     removeTypingIndicator(typingIndicator);
-                    handleReservationFlow(userMessage);
+                    try {
+                        handleReservationFlow(userMessage);
+                    } catch (err) {
+                        // In case of any error, ensure the chat input is re-enabled
+                        console.error("Error handling reservation flow:", err);
+                        chatInput.disabled = false;
+                        chatInput.focus();
+                    }
                     // Note: we DO NOT re-enable input here, as each step in handleReservationFlow 
                     // handles its own input enabling at the appropriate time
                 }, getRandomDelay(1000, 1800)); // Increased reservation flow response delay
@@ -407,103 +414,123 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Input remains disabled while typing
                 break;
              
-                case "verification":
-                    const verificationResponse = userInput.toLowerCase();
+            case "verification":
+                const verificationResponse = userInput.toLowerCase();
+                
+                if (verificationResponse === 'correct') {
+                    // Disable input immediately
+                    chatInput.disabled = true;
                     
-                    if (verificationResponse === 'correct') {
-                        // Disable input immediately
-                        chatInput.disabled = true;
-                        
-                        // Create the reservation object
-                        const reservation = {
-                            first_name: reservationState.firstName,
-                            last_name: reservationState.lastName,
-                            phone_number: reservationState.phoneNumber,
-                            created_at: new Date().toISOString(),
-                            source: isWaitlistFlow ? 'public' : 'direct_invite' // Add source field
-                        };
-                        
-                        // Show typing indicator
-                        const confirmTypingIndicator = showTypingIndicator();
-                        
-                        // Save to Supabase
-                        saveReservationToSupabase(reservation)
-                            .then(() => {
-                                // Remove typing indicator
-                                removeTypingIndicator(confirmTypingIndicator);
-                                
-                                // Add confirmation message based on flow
-                                let confirmationMessage;
-                                
-                                if (isWaitlistFlow) {
-                                    confirmationMessage = `you're in the loop, ${reservationState.firstName}. we'll text you at ${formatPhoneNumber(reservationState.phoneNumber)} with updates about potential access as the event approaches.`;
-                                } else {
-                                    confirmationMessage = `you're in, ${reservationState.firstName}. we look forward to seeing you. you'll receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`;
-                                }
-                                
-                                addMessage(confirmationMessage, 'ai');
-                                
-                                // Update reservation state
-                                reservationState.stage = "complete";
-                                reservationState.confirmed = true;
-                                
-                                // Re-enable input
-                                chatInput.disabled = false;
-                                chatInput.focus();
-                            })
-                            .catch(error => {
-                                console.error("error saving to supabase:", error);
-                                
-                                // Remove typing indicator
-                                removeTypingIndicator(confirmTypingIndicator);
-                                
-                                // Add confirmation message based on flow even if there's an error
-                                let confirmationMessage;
-                                
-                                if (isWaitlistFlow) {
-                                    confirmationMessage = `you've been added to the waitlist, ${reservationState.firstName}. we'll text you at ${formatPhoneNumber(reservationState.phoneNumber)} if a spot becomes available.`;
-                                } else {
-                                    confirmationMessage = `you're in, ${reservationState.firstName}. we look forward to seeing you. you'll receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`;
-                                }
-                                
-                                addMessage(confirmationMessage, 'ai');
-                                
-                                // Update reservation state
-                                reservationState.stage = "complete";
-                                reservationState.confirmed = true;
-                                
-                                // Re-enable input
-                                chatInput.disabled = false;
-                                chatInput.focus();
-                            });
-                    } else if (verificationResponse === 'edit') {
-                        reservationState.stage = "firstName";
-                        
-                        // Add typing indicator for edit message
-                        const editTypingIndicator = showTypingIndicator();
-                        
-                        // Delay the edit message
-                        setTimeout(() => {
-                            removeTypingIndicator(editTypingIndicator);
-                            addMessage("let's update your information. please enter your first name again.", 'ai');
-                            chatInput.disabled = false; // Re-enable input
+                    // Create the reservation object
+                    const reservation = {
+                        first_name: reservationState.firstName,
+                        last_name: reservationState.lastName,
+                        phone_number: reservationState.phoneNumber,
+                        created_at: new Date().toISOString(),
+                        source: isWaitlistFlow ? 'public' : 'direct_invite' // Add source field
+                    };
+                    
+                    // Show typing indicator
+                    const confirmTypingIndicator = showTypingIndicator();
+                    
+                    // Save to Supabase
+                    saveReservationToSupabase(reservation)
+                        .then(() => {
+                            // Remove typing indicator
+                            removeTypingIndicator(confirmTypingIndicator);
+                            
+                            // Add confirmation message based on flow
+                            let confirmationMessage;
+                            
+                            if (isWaitlistFlow) {
+                                confirmationMessage = `you're in the loop, ${reservationState.firstName}. we'll text you at ${formatPhoneNumber(reservationState.phoneNumber)} with updates about potential access as the event approaches.`;
+                            } else {
+                                confirmationMessage = `you're in, ${reservationState.firstName}. we look forward to seeing you. you'll receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`;
+                            }
+                            
+                            addMessage(confirmationMessage, 'ai');
+                            
+                            // Update reservation state
+                            reservationState.stage = "complete";
+                            reservationState.confirmed = true;
+                            
+                            // Re-enable input
+                            chatInput.disabled = false;
                             chatInput.focus();
-                        }, getRandomDelay(1000, 1800));
-                    } else {
-                        // For invalid responses, show typing indicator
-                        const invalidTypingIndicator = showTypingIndicator();
-                        
-                        // Delay the invalid response message
-                        setTimeout(() => {
-                            removeTypingIndicator(invalidTypingIndicator);
-                            addMessage("type 'correct' to confirm your information or 'edit' to make changes.", 'ai');
-                            chatInput.disabled = false; // Re-enable input
+                        })
+                        .catch(error => {
+                            console.error("error saving to supabase:", error);
+                            
+                            // Remove typing indicator
+                            removeTypingIndicator(confirmTypingIndicator);
+                            
+                            // Add confirmation message based on flow even if there's an error
+                            let confirmationMessage;
+                            
+                            if (isWaitlistFlow) {
+                                confirmationMessage = `you've been added to the waitlist, ${reservationState.firstName}. we'll text you at ${formatPhoneNumber(reservationState.phoneNumber)} if a spot becomes available.`;
+                            } else {
+                                confirmationMessage = `you're in, ${reservationState.firstName}. we look forward to seeing you. you'll receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`;
+                            }
+                            
+                            addMessage(confirmationMessage, 'ai');
+                            
+                            // Update reservation state
+                            reservationState.stage = "complete";
+                            reservationState.confirmed = true;
+                            
+                            // Re-enable input
+                            chatInput.disabled = false;
                             chatInput.focus();
-                        }, getRandomDelay(1000, 1800));
-                    }
-                    break;
+                        });
+                } else if (verificationResponse === 'edit') {
+                    reservationState.stage = "firstName";
+                    
+                    // Add typing indicator for edit message
+                    const editTypingIndicator = showTypingIndicator();
+                    
+                    // Delay the edit message
+                    setTimeout(() => {
+                        removeTypingIndicator(editTypingIndicator);
+                        addMessage("let's update your information. please enter your first name again.", 'ai');
+                        chatInput.disabled = false; // Re-enable input
+                        chatInput.focus();
+                    }, getRandomDelay(1000, 1800));
+                } else {
+                    // For invalid responses, show typing indicator
+                    const invalidTypingIndicator = showTypingIndicator();
+                    
+                    // Delay the invalid response message
+                    setTimeout(() => {
+                        removeTypingIndicator(invalidTypingIndicator);
+                        addMessage("type 'correct' to confirm your information or 'edit' to make changes.", 'ai');
+                        chatInput.disabled = false; // Re-enable input
+                        chatInput.focus();
+                    }, getRandomDelay(1000, 1800));
                 }
-            }    
+                break;
+            
+            case "complete":
+                // Handle post-reservation messages with a simple response
+                const postReservationIndicator = showTypingIndicator();
+                
+                setTimeout(() => {
+                    removeTypingIndicator(postReservationIndicator);
+                    
+                    let responseMessage;
+                    if (isWaitlistFlow) {
+                        responseMessage = "thanks for your message. we'll be in touch with updates as the event approaches.";
+                    } else {
+                        responseMessage = "thanks for your message. we're looking forward to seeing you at the event!";
+                    }
+                    
+                    addMessage(responseMessage, 'ai');
+                    chatInput.disabled = false;
+                    chatInput.focus();
+                }, getRandomDelay(1000, 1800));
+                break;
+        }
+    }    
     
     // Helper function to format phone numbers for display
     function formatPhoneNumber(phoneNumberString) {
