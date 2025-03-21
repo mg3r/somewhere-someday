@@ -8,6 +8,12 @@
   ],
   "routes": [
     {
+      "src": "/admin.html",
+      "headers": {
+        "Basic-Auth": "YWRtaW46aWFtc3BlY2lhbA=="
+      }
+    },
+    {
       "src": "/archive",
       "dest": "/archive.html"
     },
@@ -22,12 +28,6 @@
     {
       "src": "/(.*)",
       "dest": "/$1"
-    },
-    {
-      "src": "/admin.html",
-      "headers": {
-        "Basic-Auth": "admin:iamspecial"
     }
-    }  
   ]
 }
