@@ -334,7 +334,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to start the waitlist process for public/QR code signups
     function startWaitlist() {
         reservationState.stage = "firstName";
-        addMessage("free your mind. try something new. to be a part of our next event, you'll need to join our guestlist. please enter your first name.", 'ai');
+        addMessage("free your mind. try something new. to be a part of our next event, you'll need to request to join our guestlist. please enter your first name.", 'ai');
     }
         
     // Function to handle reservation flow
@@ -443,7 +443,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             let confirmationMessage;
                             
                             if (isWaitlistFlow) {
-                                confirmationMessage = `you're in the loop, ${reservationState.firstName}. we'll text you at ${formatPhoneNumber(reservationState.phoneNumber)} with updates about potential access as the event approaches.`;
+                                confirmationMessage = `you're in the loop, ${reservationState.firstName}. we'll text you at ${formatPhoneNumber(reservationState.phoneNumber)} with updates about potential access as the april 5 event approaches.`;
                             } else {
                                 confirmationMessage = `you're in, ${reservationState.firstName}. we look forward to seeing you. you'll receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`;
                             }
@@ -468,7 +468,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             let confirmationMessage;
                             
                             if (isWaitlistFlow) {
-                                confirmationMessage = `you've been added to the waitlist, ${reservationState.firstName}. we'll text you at ${formatPhoneNumber(reservationState.phoneNumber)} if a spot becomes available.`;
+                                confirmationMessage = `you're in the loop, ${reservationState.firstName}. we'll text you at ${formatPhoneNumber(reservationState.phoneNumber)} with updates about potential access as the april 5 event approaches.`;
                             } else {
                                 confirmationMessage = `you're in, ${reservationState.firstName}. we look forward to seeing you. you'll receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`;
                             }
@@ -519,7 +519,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     let responseMessage;
                     if (isWaitlistFlow) {
-                        responseMessage = "thanks for your message. we'll be in touch with updates as the event approaches.";
+                        responseMessage = "thanks for your message. we'll be in touch with updates.";
                     } else {
                         responseMessage = "thanks for your message. we're looking forward to seeing you at the event!";
                     }
