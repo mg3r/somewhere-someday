@@ -460,7 +460,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             let confirmationMessage;
                             
                             if (isWaitlistFlow) {
-                                confirmationMessage = `you're in the loop, ${reservationState.firstName}. we'll text you at ${formatPhoneNumber(reservationState.phoneNumber)} with updates about potential access as the event approaches.`;
+                                confirmationMessage = `you're in the loop, ${reservationState.firstName}. we'll text you at ${formatPhoneNumber(reservationState.phoneNumber)} with details about potential access as the event approaches.`;
                             } else {
                                 confirmationMessage = `you're in, ${reservationState.firstName}. we look forward to seeing you. you'll receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`;
                             }
