@@ -602,19 +602,24 @@
       // Initialize Supabase client
       supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
       
-      // Test connection
-      supabaseClient.from('reservations').select('count()', { count: 'exact' }).then(({ count, error }) => {
-        if (error) {
-          alert(`Error connecting to Supabase: ${error.message}`);
-        } else {
-          // Hide auth section, show content
-          document.getElementById('auth-section').style.display = 'none';
-          document.getElementById('content-section').style.display = 'block';
-          
-          // Show success message
-          alert(`Connected successfully! Found ${count} reservations.`);
-        }
-      });
+      // Test connection by getting a simple count of reservations
+      supabaseClient
+        .from('reservations')
+        .select('id')
+        .limit(1)
+        .then(({ data, error }) => {
+          if (error) {
+            console.error('Error connecting to Supabase:', error);
+            alert(`Error connecting to Supabase: ${error.message}`);
+          } else {
+            // Hide auth section, show content
+            document.getElementById('auth-section').style.display = 'none';
+            document.getElementById('content-section').style.display = 'block';
+            
+            // Show success message
+            alert('Connected successfully!');
+          }
+        });
     }
     
     // Function to search recipients
@@ -635,6 +640,7 @@
       searchResults.innerHTML = '<p style="padding: 10px;">Searching...</p>';
       
       try {
+        // Build a query with proper filtering for case-insensitive search
         const { data, error } = await supabaseClient
           .from('reservations')
           .select('id, first_name, last_name, phone_number, source')
@@ -642,7 +648,7 @@
         
         if (error) throw error;
         
-        if (data.length === 0) {
+        if (!data || data.length === 0) {
           searchResults.innerHTML = '<p style="padding: 10px;">No results found</p>';
           return;
         }
@@ -774,7 +780,7 @@
           const { data, error } = await query;
           
           if (error) throw error;
-          recipients = data;
+          recipients = data || [];
         }
         
         // Initialize results
@@ -813,27 +819,32 @@
                 })
               });
               
+              if (!twilioResponse.ok) {
+                const errorText = await twilioResponse.text();
+                throw new Error(`Twilio API error: ${errorText}`);
+              }
+              
               const twilioData = await twilioResponse.json();
               
-              if (twilioResponse.ok) {
-                // Log the message in Supabase
-                await supabaseClient.from('message_logs').insert({
-                  reservation_id: recipient.id,
-                  message_sid: twilioData.sid,
-                  message_type: recipientType === 'specific' ? 'specific' : recipientType,
-                  message_body: personalizedMessage,
-                  status: twilioData.status
-                });
-                
-                results.success.push({
-                  id: recipient.id,
-                  phone: recipient.phone_number,
-                  name: recipient.first_name,
-                  sid: twilioData.sid
-                });
-              } else {
-                throw new Error(twilioData.message || 'Error sending message');
+              // Log the message in Supabase
+              const { error: logError } = await supabaseClient.from('message_logs').insert({
+                reservation_id: recipient.id,
+                message_sid: twilioData.sid,
+                message_type: recipientType === 'specific' ? 'specific' : recipientType,
+                message_body: personalizedMessage,
+                status: twilioData.status
+              });
+              
+              if (logError) {
+                console.error('Error logging message:', logError);
               }
+              
+              results.success.push({
+                id: recipient.id,
+                phone: recipient.phone_number,
+                name: recipient.first_name,
+                sid: twilioData.sid
+              });
             }
           } catch (err) {
             console.error(`Error sending to ${recipient.phone_number}:`, err);
@@ -918,6 +929,19 @@
       historyList.innerHTML = '<p>Loading message history...</p>';
       
       try {
+        // First check if the message_logs table exists
+        const { error: checkError } = await supabaseClient
+          .from('message_logs')
+          .select('id')
+          .limit(1);
+          
+        if (checkError && checkError.code === '42P01') {
+          // Table doesn't exist
+          historyList.innerHTML = '<p>Message logs table not found. You may need to create it first.</p>';
+          return;
+        }
+        
+        // Query the message logs with a simpler approach
         let query = supabaseClient
           .from('message_logs')
           .select(`
@@ -927,8 +951,7 @@
             message_body,
             status,
             created_at,
-            reservation_id,
-            reservations!inner(first_name, last_name, phone_number)
+            reservation_id
           `)
           .order('created_at', { ascending: false });
         
@@ -944,7 +967,7 @@
         
         query = query.range(from, to);
         
-        const { data, error, count } = await query;
+        const { data, error } = await query;
         
         if (error) throw error;
         
@@ -956,16 +979,35 @@
           return;
         }
         
+        // Fetch recipient details for these messages
+        const recipientIds = data.map(msg => msg.reservation_id);
+        const { data: recipients, error: recipientError } = await supabaseClient
+          .from('reservations')
+          .select('id, first_name, last_name, phone_number')
+          .in('id', recipientIds);
+          
+        if (recipientError) {
+          console.error('Error fetching recipients:', recipientError);
+        }
+        
+        // Create a map of recipient data
+        const recipientMap = {};
+        if (recipients) {
+          recipients.forEach(recipient => {
+            recipientMap[recipient.id] = recipient;
+          });
+        }
+        
         data.forEach(msg => {
           const date = new Date(msg.created_at).toLocaleString();
-          const recipient = msg.reservations;
+          const recipient = recipientMap[msg.reservation_id] || { first_name: 'Unknown', last_name: '', phone_number: 'Unknown' };
           
           const div = document.createElement('div');
           div.className = 'history-item';
           div.innerHTML = `
             <div class="history-meta">
               <strong>Sent:</strong> ${date} | 
-              <strong>To:</strong> ${recipient?.first_name} ${recipient?.last_name} (${recipient?.phone_number}) | 
+              <strong>To:</strong> ${recipient.first_name} ${recipient.last_name} (${recipient.phone_number}) | 
               <strong>Type:</strong> ${msg.message_type} | 
               <strong>Status:</strong> ${msg.status}
             </div>
@@ -975,8 +1017,20 @@
           historyList.appendChild(div);
         });
         
-        // Update pagination
-        updatePagination(page, Math.ceil(count / pageSize), filter);
+        // Simple pagination
+        const countQuery = supabaseClient
+          .from('message_logs')
+          .select('id', { count: 'exact' });
+          
+        if (filter !== 'all') {
+          countQuery.eq('message_type', filter);
+        }
+        
+        const { count, error: countError } = await countQuery;
+        
+        if (!countError && typeof count === 'number') {
+          updatePagination(page, Math.ceil(count / pageSize), filter);
+        }
       } catch (error) {
         console.error('Error loading message history:', error);
         historyList.innerHTML = `<p>Error loading history: ${error.message}</p>`;
