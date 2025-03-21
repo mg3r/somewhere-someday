@@ -8,25 +8,6 @@
   ],
   "routes": [
     {
-      "src": "/admin.html",
-      "headers": {
-        "WWW-Authenticate": "Basic realm=\"Secure Area\"",
-        "Content-Security-Policy": "frame-ancestors 'none'"
-      },
-      "continue": true
-    },
-    {
-      "src": "/admin.html",
-      "status": 401,
-      "has": [
-        {
-          "type": "header",
-          "key": "Authorization",
-          "value": "(?!Basic YWRtaW46aWFtc3BlY2lhbA==)"
-        }
-      ]
-    },
-    {
       "src": "/archive",
       "dest": "/archive.html"
     },
