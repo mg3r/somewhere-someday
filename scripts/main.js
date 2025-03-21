@@ -418,9 +418,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     let verificationMessage;
                     
                     if (isWaitlistFlow) {
-                        verificationMessage = `please verify your information:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm or 'edit' to make changes.`;
+                        verificationMessage = `please verify your information:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm and receive event updates or 'edit' to make changes.`;
                     } else {
-                        verificationMessage = `please verify your information to confirm your attendance:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm or 'edit' to make changes.`;
+                        verificationMessage = `please verify your information to confirm your attendance:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm and receive event updates or 'edit' to make changes.`;
                     }
                     
                     addMessage(verificationMessage, 'ai');
