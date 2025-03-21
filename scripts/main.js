@@ -327,7 +327,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to start the waitlist process for public/QR code signups
     function startWaitlist() {
         reservationState.stage = "firstName";
-        addMessage("free your mind. try something new. to be a part of our next event, you'll neeed to join our guestlist. please enter your first name.", 'ai');
+        addMessage("free your mind. try something new. to be a part of our next event, you'll need to join our guestlist. please enter your first name.", 'ai');
     }
         
     // Function to handle reservation flow
