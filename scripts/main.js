@@ -226,55 +226,39 @@ document.addEventListener('DOMContentLoaded', function() {
                             }, 3000); // Added extra pause between welcome and details typing
                         }, getRandomDelay(800, 1500)); // Increased welcome typing delay
                     } else if (userMessage === '111') {
-                        // Alternative password for public/QR code signups
-                        isAuthenticated = true;
-                        isWaitlistFlow = true; // Set waitlist flow flag
-                        
-                        // Show the archive link
-                        const archiveLink = document.getElementById('archive-link');
-                        if (archiveLink) {
-                            archiveLink.classList.remove('hidden');
-                            archiveLink.classList.add('visible');
-                        }
-                        
-                        // First send alternative welcome message
-                        const welcomeTypingIndicator = showTypingIndicator();
-                        setTimeout(() => {
-                            removeTypingIndicator(welcomeTypingIndicator);
-                            let welcomeMessage = 'welcome. you found us. somewhere someday, we host events to express, create, and connect. here are the details of our next event:';
-                            addMessage(welcomeMessage, 'ai');
-                            
-                            document.body.classList.add('authenticated');
+    // Alternative password for public/QR code signups
+    isAuthenticated = true;
+    isWaitlistFlow = true; // Set waitlist flow flag
+    
+    // Show the archive link
+    const archiveLink = document.getElementById('archive-link');
+    if (archiveLink) {
+        archiveLink.classList.remove('hidden');
+        archiveLink.classList.add('visible');
+    }
+    
+    // First send alternative welcome message
+    const welcomeTypingIndicator = showTypingIndicator();
+    setTimeout(() => {
+        removeTypingIndicator(welcomeTypingIndicator);
+        // Modified welcome message - removed "here are the details of our next event"
+        let welcomeMessage = 'welcome. you found us. somewhere someday, we host events to express, create, and connect.';
+        addMessage(welcomeMessage, 'ai');
+        
+        document.body.classList.add('authenticated');
 
-                            // Then show typing for event details
-                            setTimeout(() => {
-                                const detailsTypingIndicator = showTypingIndicator();
-                                
-                                setTimeout(() => {
-                                    removeTypingIndicator(detailsTypingIndicator);
-                                    
-                                    // Format event details as a separate message
-                                    let detailsMessage = '';
-                                    for (const [key, value] of Object.entries(eventDetails)) {
-                                        detailsMessage += `${key}: ${value}\n`;
-                                    }
-                                    
-                                    addMessage(detailsMessage, 'ai');
-                                    
-                                    // Start waitlist flow
-                                    setTimeout(() => {
-                                        const waitlistTypingIndicator = showTypingIndicator();
-                                        setTimeout(() => {
-                                            removeTypingIndicator(waitlistTypingIndicator);
-                                            startWaitlist(); // New function for waitlist flow
-                                            chatInput.disabled = false;
-                                            chatInput.focus();
-                                        }, getRandomDelay(2000, 3000));
-                                    }, 3000);
-                                }, getRandomDelay(2000, 3000));
-                            }, 3000);
-                        }, getRandomDelay(800, 1500));
-                    } else {
+        // Skip event details section completely and go directly to waitlist flow
+        setTimeout(() => {
+            const waitlistTypingIndicator = showTypingIndicator();
+            setTimeout(() => {
+                removeTypingIndicator(waitlistTypingIndicator);
+                startWaitlist(); // Start waitlist flow
+                chatInput.disabled = false;
+                chatInput.focus();
+            }, getRandomDelay(2000, 3000));
+        }, 3000);
+    }, getRandomDelay(800, 1500));
+} else {
                         // Wrong password
                         addMessage("incorrect password. try again.", 'ai');
                         chatInput.disabled = false;
