@@ -385,7 +385,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Delay the phone number request message
                 setTimeout(() => {
                     removeTypingIndicator(phoneTypingIndicator);
-                    addMessage("please enter your phone number. include country code if international (e.g., +44 for UK).", 'ai');
+                    addMessage("please enter your phone number. include country code (e.g., +1 for US).", 'ai');
                     chatInput.disabled = false; // Re-enable input
                     chatInput.focus();
                 }, getRandomDelay(1000, 1800));
@@ -399,7 +399,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Basic validation - must contain digits and be at least 7 characters
                 if (!/\d/.test(phoneInput) || phoneInput.length < 7) {
-                    addMessage("please enter a valid phone number. include country code if international.", 'ai');
+                    addMessage("please enter a valid phone number. include country code.", 'ai');
                     chatInput.disabled = false; // Re-enable input
                     chatInput.focus();
                     return; // Don't proceed to next stage
