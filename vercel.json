@@ -9,24 +9,16 @@
   "routes": [
     {
       "src": "/admin.html",
-      "continue": true,
       "headers": {
-        "WWW-Authenticate": "Basic",
-        "X-Auth-Required": "true"
-      }
+        "WWW-Authenticate": "Basic realm=\"Secure Area\"",
+        "Content-Security-Policy": "frame-ancestors 'none'"
+      },
+      "continue": true
     },
     {
       "src": "/admin.html",
       "status": 401,
-      "headers": {
-        "WWW-Authenticate": "Basic realm=\"Secure Area\""
-      },
       "has": [
-        {
-          "type": "header",
-          "key": "X-Auth-Required",
-          "value": "true"
-        },
         {
           "type": "header",
           "key": "Authorization",
