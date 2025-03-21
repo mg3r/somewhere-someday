@@ -9,9 +9,30 @@
   "routes": [
     {
       "src": "/admin.html",
+      "continue": true,
       "headers": {
-        "Basic-Auth": "YWRtaW46aWFtc3BlY2lhbA=="
+        "WWW-Authenticate": "Basic",
+        "X-Auth-Required": "true"
       }
+    },
+    {
+      "src": "/admin.html",
+      "status": 401,
+      "headers": {
+        "WWW-Authenticate": "Basic realm=\"Secure Area\""
+      },
+      "has": [
+        {
+          "type": "header",
+          "key": "X-Auth-Required",
+          "value": "true"
+        },
+        {
+          "type": "header",
+          "key": "Authorization",
+          "value": "(?!Basic YWRtaW46aWFtc3BlY2lhbA==)"
+        }
+      ]
     },
     {
       "src": "/archive",
