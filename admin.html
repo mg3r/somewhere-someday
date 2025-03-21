@@ -93,39 +93,32 @@
             const password = document.getElementById('password').value;
             const errorElement = document.getElementById('error');
             
-            // Use a hash-like approach for slightly better security
-            // This is still client-side security but better than plaintext
+            // Simple direct comparison - less secure but more reliable
             const validUsername = 'admin';
-            const validPasswordHash = '89e495e7941cf9e40e6980d14a16bf023ccd4c91'; // SHA-1 hash of 'iamspecial'
+            const validPassword = 'iamspecial';
             
-            function sha1(str) {
-                // This is a simple SHA-1 implementation for client-side
-                // Not cryptographically secure but better than plaintext
-                const buffer = new TextEncoder().encode(str);
-                return crypto.subtle.digest('SHA-1', buffer).then(hash => {
-                    return Array.from(new Uint8Array(hash))
-                        .map(b => b.toString(16).padStart(2, '0'))
-                        .join('');
-                });
+            if (username === validUsername && password === validPassword) {
+                // Set session storage to remember login
+                sessionStorage.setItem('adminAuth', 'true');
+                // Redirect to actual admin page
+                window.location.href = 'admin-dashboard.html';
+            } else {
+                // Show error
+                errorElement.style.display = 'block';
+                // Clear password field
+                document.getElementById('password').value = '';
             }
-            
-            sha1(password).then(hashedPassword => {
-                if (username === validUsername && hashedPassword === validPasswordHash) {
-                    // Set session storage to remember login
-                    sessionStorage.setItem('adminAuth', 'true');
-                    // Redirect to actual admin page
-                    window.location.href = 'admin-dashboard.html';
-                } else {
-                    // Show error
-                    errorElement.style.display = 'block';
-                    // Clear password field
-                    document.getElementById('password').value = '';
-                }
-            });
         }
         
         // Allow Enter key press to submit
         document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkLogin();
+            }
+        });
+        
+        // Also allow username field to trigger login with Enter
+        document.getElementById('username').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 checkLogin();
             }
