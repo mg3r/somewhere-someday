@@ -22,6 +22,12 @@
     {
       "src": "/(.*)",
       "dest": "/$1"
+    },
+    {
+      "src": "/admin.html",
+      "headers": {
+        "Basic-Auth": "admin:iamspecial"
     }
+    }  
   ]
 }
