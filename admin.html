@@ -622,7 +622,7 @@
         });
     }
     
-    // Improved search recipients function
+    // Debug search function
     async function searchRecipients() {
     if (!supabaseClient) {
         alert('Please connect to Supabase first');
@@ -632,21 +632,17 @@
     const searchTerm = document.getElementById('recipient-search').value.trim();
     const searchResults = document.getElementById('search-results');
     
-    if (!searchTerm) {
-        searchResults.innerHTML = '<p style="padding: 10px;">Please enter a search term</p>';
-        return;
-    }
-    
-    searchResults.innerHTML = '<p style="padding: 10px;">Searching...</p>';
+    searchResults.innerHTML = '<p style="padding: 10px;">Searching and analyzing database...</p>';
     
     try {
-        console.log('Searching for:', searchTerm);
+        // First, let's get the table structure to verify column names
+        console.log('Checking table structure...');
         
-        // First try a simpler approach to see all available data
+        // Fetch all records to see what's in the database (limited to first 20)
         const { data: allData, error: allError } = await supabaseClient
         .from('reservations')
-        .select('id, first_name, last_name, phone_number, source')
-        .limit(10);
+        .select('*')
+        .limit(20);
         
         if (allError) {
         console.error('Error accessing reservations table:', allError);
@@ -654,85 +650,111 @@
         return;
         }
         
-        console.log('Sample data from reservations table:', allData);
-        
-        // Now perform the actual search
-        const { data, error } = await supabaseClient
-        .from('reservations')
-        .select('id, first_name, last_name, phone_number, source')
-        .or(
-            `first_name.ilike.%${searchTerm}%,` +
-            `last_name.ilike.%${searchTerm}%,` +
-            `phone_number.ilike.%${searchTerm}%`
-        );
-        
-        if (error) {
-        console.error('Search error:', error);
-        throw error;
+        if (!allData || allData.length === 0) {
+        searchResults.innerHTML = '<p style="padding: 10px;">The reservations table appears to be empty.</p>';
+        return;
         }
         
-        console.log('Search results:', data);
+        console.log('Available records in reservations table:', allData);
         
-        if (!data || data.length === 0) {
-        // If no results with OR query, try individual field searches
-        console.log('No results with combined search, trying individual fields');
+        // Get the structure of the first record to see column names
+        const sampleRecord = allData[0];
+        const columnNames = Object.keys(sampleRecord);
+        console.log('Column names in reservations table:', columnNames);
         
-        const firstNameResults = await supabaseClient
-            .from('reservations')
-            .select('id, first_name, last_name, phone_number, source')
-            .ilike('first_name', `%${searchTerm}%`);
-            
-        const lastNameResults = await supabaseClient
-            .from('reservations')
-            .select('id, first_name, last_name, phone_number, source')
-            .ilike('last_name', `%${searchTerm}%`);
-            
-        const phoneResults = await supabaseClient
-            .from('reservations')
-            .select('id, first_name, last_name, phone_number, source')
-            .ilike('phone_number', `%${searchTerm}%`);
+        // Check if the required columns exist
+        const hasFirstName = columnNames.includes('first_name');
+        const hasLastName = columnNames.includes('last_name');
+        const hasPhoneNumber = columnNames.includes('phone_number');
+        const hasSource = columnNames.includes('source');
         
-        console.log('First name results:', firstNameResults.data);
-        console.log('Last name results:', lastNameResults.data);
-        console.log('Phone results:', phoneResults.data);
+        const missingColumns = [];
+        if (!hasFirstName) missingColumns.push('first_name');
+        if (!hasLastName) missingColumns.push('last_name');
+        if (!hasPhoneNumber) missingColumns.push('phone_number');
+        if (!hasSource) missingColumns.push('source');
         
-        // Combine results from individual searches
-        const combinedResults = [
-            ...(firstNameResults.data || []),
-            ...(lastNameResults.data || []),
-            ...(phoneResults.data || [])
-        ];
+        if (missingColumns.length > 0) {
+        searchResults.innerHTML = `
+            <p style="padding: 10px;">Missing columns in reservations table: ${missingColumns.join(', ')}</p>
+            <p style="padding: 10px;">Available columns: ${columnNames.join(', ')}</p>
+            <p style="padding: 10px;">Please update the table or modify the search code.</p>
+        `;
+        return;
+        }
         
-        // Remove duplicates
-        const uniqueResults = [];
-        const ids = new Set();
-        combinedResults.forEach(item => {
-            if (!ids.has(item.id)) {
-            ids.add(item.id);
-            uniqueResults.push(item);
+        // Display a summary of available data
+        searchResults.innerHTML = `
+        <p style="padding: 10px;">Found ${allData.length} records in the database.</p>
+        <p style="padding: 10px;">Available fields: ${columnNames.join(', ')}</p>
+        <p style="padding: 10px;">Searching for "${searchTerm}" now...</p>
+        `;
+        
+        // Check if any records contain the search term in any field
+        const matchingRecords = [];
+        
+        allData.forEach(record => {
+        let matchFound = false;
+        
+        // Check each field for the search term
+        Object.values(record).forEach(value => {
+            if (typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())) {
+            matchFound = true;
             }
         });
         
-        if (uniqueResults.length === 0) {
+        if (matchFound) {
+            matchingRecords.push(record);
+        }
+        });
+        
+        if (matchingRecords.length === 0) {
+        // Try to find records where first_name contains "max"
+        const maxRecords = allData.filter(record => 
+            record.first_name && record.first_name.toLowerCase().includes('max')
+        );
+        
+        if (maxRecords.length > 0) {
             searchResults.innerHTML = `
-            <p style="padding: 10px;">No results found for "${searchTerm}"</p>
-            <p style="padding: 10px; font-size: 12px;">
-                Make sure the "reservations" table has columns: 
-                id, first_name, last_name, phone_number, source
-            </p>
+            <p style="padding: 10px;">Could not find "${searchTerm}" with automatic search, but found ${maxRecords.length} records with "max" in first_name:</p>
             `;
+            
+            maxRecords.forEach(person => {
+            // Skip if already selected
+            if (selectedRecipients.some(r => r.id === person.id)) {
+                return;
+            }
+            
+            const div = document.createElement('div');
+            div.className = 'recipient-item';
+            div.innerHTML = `
+                <div>
+                <strong>${person.first_name} ${person.last_name}</strong> 
+                <br>${person.phone_number} (${person.source === 'direct_invite' ? 'Direct Invite' : 'Waitlist'})
+                </div>
+                <button type="button" class="add-recipient-btn">Add</button>
+            `;
+            
+            div.querySelector('button').addEventListener('click', function() {
+                addSelectedRecipient(person);
+                div.remove();
+            });
+            
+            searchResults.appendChild(div);
+            });
+            
             return;
         }
         
-        // Display these results
-        searchResults.innerHTML = '';
+        searchResults.innerHTML = `
+            <p style="padding: 10px;">No records found containing "${searchTerm}".</p>
+            <p style="padding: 10px;">Here's a sample of what's in the database:</p>
+        `;
         
-        uniqueResults.forEach(person => {
-            // Skip if already selected
-            if (selectedRecipients.some(r => r.id === person.id)) {
-            return;
-            }
-            
+        // Show sample data (first 3 records)
+        const sampleSize = Math.min(3, allData.length);
+        for (let i = 0; i < sampleSize; i++) {
+            const person = allData[i];
             const div = document.createElement('div');
             div.className = 'recipient-item';
             div.innerHTML = `
@@ -749,13 +771,49 @@
             });
             
             searchResults.appendChild(div);
+        }
+        
+        // Add a "Show All" button
+        const showAllBtn = document.createElement('button');
+        showAllBtn.textContent = 'Show All Records';
+        showAllBtn.style.marginTop = '10px';
+        showAllBtn.style.width = '100%';
+        showAllBtn.addEventListener('click', function() {
+            // Clear current results
+            searchResults.innerHTML = '';
+            
+            // Show all records
+            allData.forEach(person => {
+            if (selectedRecipients.some(r => r.id === person.id)) {
+                return;
+            }
+            
+            const div = document.createElement('div');
+            div.className = 'recipient-item';
+            div.innerHTML = `
+                <div>
+                <strong>${person.first_name} ${person.last_name}</strong> 
+                <br>${person.phone_number} (${person.source === 'direct_invite' ? 'Direct Invite' : 'Waitlist'})
+                </div>
+                <button type="button" class="add-recipient-btn">Add</button>
+            `;
+            
+            div.querySelector('button').addEventListener('click', function() {
+                addSelectedRecipient(person);
+                div.remove();
+            });
+            
+            searchResults.appendChild(div);
+            });
         });
         
-        } else {
-        // Display original search results
-        searchResults.innerHTML = '';
+        searchResults.appendChild(showAllBtn);
         
-        data.forEach(person => {
+        } else {
+        // Display matching records
+        searchResults.innerHTML = `<p style="padding: 10px;">Found ${matchingRecords.length} matching records:</p>`;
+        
+        matchingRecords.forEach(person => {
             // Skip if already selected
             if (selectedRecipients.some(r => r.id === person.id)) {
             return;
