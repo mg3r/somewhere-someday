@@ -343,7 +343,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to start the waitlist process for public/QR code signups
     function startWaitlist() {
         reservationState.stage = "firstName";
-        addMessage("our event is limited to 100 people. to join the waitlist, please enter your first name.", 'ai');
+        addMessage("to gain access, you'll need to join the waitlist, please enter your first name.", 'ai');
     }
         
     // Function to handle reservation flow
