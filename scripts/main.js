@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     setTimeout(() => {
                         removeTypingIndicator(passwordTypingIndicator);
-                        addMessage("enter the secret password to continue", 'ai');
+                        addMessage("enter the password to continue", 'ai');
                         chatInput.disabled = false;
                         chatInput.focus();
                     }, getRandomDelay(800, 1500));
@@ -327,7 +327,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to start the waitlist process for public/QR code signups
     function startWaitlist() {
         reservationState.stage = "firstName";
-        addMessage("to gain access, you'll need to join the waitlist. please enter your first name.", 'ai');
+        addMessage("to connect with us, join our guestlist for the next event. please enter your first name.", 'ai');
     }
         
     // Function to handle reservation flow
@@ -394,7 +394,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     let verificationMessage;
                     
                     if (isWaitlistFlow) {
-                        verificationMessage = `please verify your information for the waitlist:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm or 'edit' to make changes.`;
+                        verificationMessage = `please verify your information to receive updates:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm or 'edit' to make changes.`;
                     } else {
                         verificationMessage = `please verify your information to confirm your attendance:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm or 'edit' to make changes.`;
                     }
@@ -436,7 +436,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 let confirmationMessage;
                                 
                                 if (isWaitlistFlow) {
-                                    confirmationMessage = `you've been added to the waitlist, ${reservationState.firstName}. we'll text you at ${formatPhoneNumber(reservationState.phoneNumber)} if a spot becomes available.`;
+                                    confirmationMessage = `you're in the loop, ${reservationState.firstName}. we'll text you at ${formatPhoneNumber(reservationState.phoneNumber)} with updates and and access information as the event approaches.`;
                                 } else {
                                     confirmationMessage = `you're in, ${reservationState.firstName}. we look forward to seeing you. you'll receive text updates at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`;
                                 }
