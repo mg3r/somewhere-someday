@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     setTimeout(() => {
                         removeTypingIndicator(passwordTypingIndicator);
-                        addMessage("enter the password to continue", 'ai');
+                        addMessage("enter the code to continue", 'ai');
                         chatInput.disabled = false;
                         chatInput.focus();
                     }, getRandomDelay(800, 1500));
