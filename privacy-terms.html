@@ -51,20 +51,6 @@
             margin-bottom: 10px;
         }
         
-        .back-btn {
-            display: inline-block;
-            margin-top: 20px;
-            color: var(--text-color);
-            text-decoration: none;
-            border: 1px solid var(--border-color);
-            padding: 8px 15px;
-            cursor: pointer;
-        }
-        
-        .back-btn:hover {
-            background-color: var(--border-color);
-        }
-        
         @media (max-width: 600px) {
             .container {
                 padding: 10px;
@@ -191,16 +177,6 @@
             <h3>Policy Changes</h3>
             <p>Our privacy policy may change from time to time.</p>
         </section>
-        
-        <a href="javascript:history.back()" class="back-btn">← Back</a>
     </div>
-
-    <script>
-        // Script to handle the back button if needed
-        document.querySelector('.back-btn').addEventListener('click', function(e) {
-            e.preventDefault();
-            window.history.back();
-        });
-    </script>
 </body>
 </html>
