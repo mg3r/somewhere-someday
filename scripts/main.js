@@ -415,12 +415,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => {
                     removeTypingIndicator(verifyTypingIndicator);
                     // Show all collected information for verification
-                    let verificationMessage;
+                    let verificationMessage;function addMessage(text, sender) {
+                        const messageElement = document.createElement('div');
+                        messageElement.classList.add('message');
+                        messageElement.classList.add(sender + '-message');
+                        
+                        // Replace new lines with <br> for proper display
+                        // We'll use innerHTML to allow HTML content
+                        messageElement.innerHTML = text.replace(/\n/g, '<br>');
+                        
+                        chatHistory.appendChild(messageElement);
+                        chatHistory.scrollTop = chatHistory.scrollHeight;
+                        
+                        // Add click event listeners to any links in the message
+                        const links = messageElement.querySelectorAll('a');
+                        links.forEach(link => {
+                            link.addEventListener('click', function(event) {
+                                // This prevents the click from bubbling up and triggering the body click handler
+                                event.stopPropagation();
+                            });
+                        });
+                    }
                     
                     if (isWaitlistFlow) {
                         verificationMessage = `please verify your information to receive event updates:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm or 'edit' to make changes.`;
                     } else {
-                        verificationMessage = `please verify your information to confirm your attendance and receive event updates:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm or 'edit' to make changes.`;
+                        verificationMessage = `please verify your information to confirm your attendance and receive event updates:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm or 'edit' to make changes.\n\nby confirming, you agree to our <a href="privacy-terms.html" target="_blank">privacy policy and terms</a>.`;
                     }
                     
                     addMessage(verificationMessage, 'ai');
@@ -623,10 +643,20 @@ document.addEventListener('DOMContentLoaded', function() {
         messageElement.classList.add(sender + '-message');
         
         // Replace new lines with <br> for proper display
+        // We'll use innerHTML to allow HTML content
         messageElement.innerHTML = text.replace(/\n/g, '<br>');
         
         chatHistory.appendChild(messageElement);
         chatHistory.scrollTop = chatHistory.scrollHeight;
+        
+        // Add click event listeners to any links in the message
+        const links = messageElement.querySelectorAll('a');
+        links.forEach(link => {
+            link.addEventListener('click', function(event) {
+                // This prevents the click from bubbling up and triggering the body click handler
+                event.stopPropagation();
+            });
+        });
     }
     
     // Prevent the chat container click from triggering body click
