@@ -385,7 +385,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Delay the phone number request message
                 setTimeout(() => {
                     removeTypingIndicator(phoneTypingIndicator);
-                    addMessage("please enter your phone number to receive text updates about the event. include country code (e.g., +1 for US).", 'ai');
+                    addMessage("please enter your phone number.", 'ai');
                     chatInput.disabled = false; // Re-enable input
                     chatInput.focus();
                 }, getRandomDelay(1000, 1800));
