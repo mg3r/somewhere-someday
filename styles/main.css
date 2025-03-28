@@ -203,7 +203,7 @@ body.authenticated #triangle-container {
 /* Mobile Triangle Click Indicator - Adjusted Position and Timing */
 #mobile-triangle-cue {
     position: absolute;
-    top: 54%; /* Moved down from 50% to 54% to appear more centered in the main triangle */
+    top: 54%; /* Moved down from 50% to 5% to appear more centered in the main triangle */
     left: 50%;
     transform: translate(-50%, -50%);
     width: 30px; /* Smaller than the main triangle */

@@ -440,7 +440,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (isWaitlistFlow) {
                         verificationMessage = `please verify your information to receive event updates:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm or 'edit' to make changes.`;
                     } else {
-                        verificationMessage = `please verify your information to confirm your attendance and receive event updates:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm or 'edit' to make changes.\n\nby confirming, you agree to our <a href="privacy-terms.html" target="_blank" style="color: white; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">privacy policy and terms</a>.`;
+                        verificationMessage = `please verify your information to confirm your attendance and receive event updates:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm or 'edit' to make changes.\n\nby confirming, you agree to our <a href="privacy-terms.html" target="_blank" style="color: #e0e0e0; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">privacy policy and terms</a>.`;
                     }
                     
                     addMessage(verificationMessage, 'ai');
