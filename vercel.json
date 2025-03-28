@@ -12,6 +12,10 @@
       "dest": "/archive.html"
     },
     {
+      "src": "/privacy-terms",
+      "dest": "/privacy-terms.html"
+    },
+    {
       "src": "/styles/(.*)",
       "dest": "/styles/$1"
     },
