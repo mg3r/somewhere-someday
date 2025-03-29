@@ -438,9 +438,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     
                     if (isWaitlistFlow) {
-                        verificationMessage = `please verify your information to unlock event updates:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm or 'edit' to make changes. by confirming, you agree to our text <a href="privacy-terms" target="_blank" style="color: #e0e0e0; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">privacy policy and terms</a>.`;
+                        verificationMessage = `verify your information to request access to the guestlist:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm or 'edit' to make changes. by confirming, you agree to our text <a href="privacy-terms" target="_blank" style="color: #e0e0e0; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">privacy policy and terms</a>.`;
                     } else {
-                        verificationMessage = `please verify your information to confirm your attendance and unlock event updates:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm or 'edit' to make changes. by confirming, you agree to our text <a href="privacy-terms" target="_blank" style="color: #e0e0e0; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">privacy policy and terms</a>.`;
+                        verificationMessage = `verify your information to confirm your attendance:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm or 'edit' to make changes. by confirming, you agree to our text <a href="privacy-terms" target="_blank" style="color: #e0e0e0; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">privacy policy and terms</a>.`;
                     }
                     
                     addMessage(verificationMessage, 'ai');
@@ -480,9 +480,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             let confirmationMessage;
                             
                             if (isWaitlistFlow) {
-                                confirmationMessage = `you're in the loop, ${reservationState.firstName}. we'll text you at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`;
+                                confirmationMessage = `you're in the loop, ${reservationState.firstName}. we'll text you with more details at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`;
                             } else {
-                                confirmationMessage = `you're in, ${reservationState.firstName}. we look forward to seeing you. we'll text you at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`;
+                                confirmationMessage = `you're in, ${reservationState.firstName}. we look forward to seeing you. we'll text you with more details at ${formatPhoneNumber(reservationState.phoneNumber)} as the event approaches.`;
                             }
                             
                             addMessage(confirmationMessage, 'ai');
