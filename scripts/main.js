@@ -1,4 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Add a configuration variable at the top that's easy to change when needed
+    const config = {
+        atCapacity: true // Set to false to re-enable the chat functionality
+    };
+
     const supabaseUrl = 'https://kwmsqwfemtfupfesaxqd.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3bXNxd2ZlbXRmdXBmZXNheHFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDIzMDkyMjUsImV4cCI6MjA1Nzg4NTIyNX0.IVVp2qhVbwpwT_QCZpOE5mtWn-JojX8t2DTBPRqlKSo';
     // Fixed initialization - using window.supabase and renamed client
@@ -132,24 +137,54 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Show typing indicator for the first message with delay
                 const firstTypingIndicator = showTypingIndicator();
                 
-                // Disable input while messages are being typed
+                // Always disable input if at capacity
                 chatInput.disabled = true;
                 
+                // Modified to handle capacity status
                 setTimeout(() => {
                     // Show the first message with event details
                     removeTypingIndicator(firstTypingIndicator);
-                    addMessage("somewhere: xxx\nsomeday: april 5 2025", 'ai');
                     
-                    // Show typing indicator for the password prompt
-                    const passwordTypingIndicator = showTypingIndicator();
-                    
-                    setTimeout(() => {
-                        removeTypingIndicator(passwordTypingIndicator);
-                        addMessage("enter the code to continue", 'ai');
-                        chatInput.disabled = false;
-                        chatInput.focus();
-                    }, getRandomDelay(800, 1500));
-                    
+                    if (config.atCapacity) {
+                        // Add capacity message
+                        addMessage("somewhere: xxx\nsomeday: april 5 2025", 'ai');
+                        
+                        // Show typing indicator for capacity message
+                        const capacityTypingIndicator = showTypingIndicator();
+                        
+                        setTimeout(() => {
+                            removeTypingIndicator(capacityTypingIndicator);
+                            addMessage("we've reached capacity.", 'ai');
+                            
+                            // Style the input to appear grayed out
+                            chatInput.style.backgroundColor = "#444"; 
+                            chatInput.style.color = "#777";
+                            chatInput.placeholder = "at capacity";
+                            
+                            // Make sure it stays disabled
+                            chatInput.disabled = true;
+                            
+                            // Also gray out send button if it exists
+                            const sendButton = document.getElementById('send-button');
+                            if (sendButton) {
+                                sendButton.style.opacity = "0.5";
+                                sendButton.style.cursor = "not-allowed";
+                            }
+                        }, getRandomDelay(800, 1500));
+                    } else {
+                        // Original flow
+                        addMessage("somewhere: xxx\nsomeday: april 5 2025", 'ai');
+                        
+                        // Show typing indicator for the password prompt
+                        const passwordTypingIndicator = showTypingIndicator();
+                        
+                        setTimeout(() => {
+                            removeTypingIndicator(passwordTypingIndicator);
+                            addMessage("enter the code to continue", 'ai');
+                            chatInput.disabled = false;
+                            chatInput.focus();
+                        }, getRandomDelay(800, 1500));
+                    }
                 }, getRandomDelay(800, 1500));
                 
             }, 10);
@@ -158,6 +193,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Handle chat input
     chatInput.addEventListener('keypress', function(e) {
+        // Immediately return if we're at capacity
+        if (config.atCapacity) return;
+        
         if (e.key === 'Enter' && chatInput.value.trim() !== '') {
             const userMessage = chatInput.value.trim().toLowerCase(); // Convert to lowercase immediately
             
@@ -307,6 +345,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const sendButton = document.getElementById('send-button');
     if (sendButton) {
         sendButton.addEventListener('click', function() {
+            // Immediately return if we're at capacity
+            if (config.atCapacity) return;
+            
             if (chatInput.value.trim() !== '') {
                 // Force lowercase before dispatching event
                 chatInput.value = chatInput.value.toLowerCase();
@@ -415,27 +456,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 setTimeout(() => {
                     removeTypingIndicator(verifyTypingIndicator);
                     // Show all collected information for verification
-                    let verificationMessage;function addMessage(text, sender) {
-                        const messageElement = document.createElement('div');
-                        messageElement.classList.add('message');
-                        messageElement.classList.add(sender + '-message');
-                        
-                        // Replace new lines with <br> for proper display
-                        // We'll use innerHTML to allow HTML content
-                        messageElement.innerHTML = text.replace(/\n/g, '<br>');
-                        
-                        chatHistory.appendChild(messageElement);
-                        chatHistory.scrollTop = chatHistory.scrollHeight;
-                        
-                        // Add click event listeners to any links in the message
-                        const links = messageElement.querySelectorAll('a');
-                        links.forEach(link => {
-                            link.addEventListener('click', function(event) {
-                                // This prevents the click from bubbling up and triggering the body click handler
-                                event.stopPropagation();
-                            });
-                        });
-                    }
+                    let verificationMessage;
                     
                     if (isWaitlistFlow) {
                         verificationMessage = `verify your information to request access to the guestlist:\n\nfirst name: ${reservationState.firstName}\nlast name: ${reservationState.lastName}\nphone: ${formatPhoneNumber(reservationState.phoneNumber)}\n\ntype 'correct' to confirm or 'edit' to make changes. by confirming, you agree to our text <a href="privacy-terms" target="_blank" style="color: #e0e0e0; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">privacy policy and terms</a>.`;
