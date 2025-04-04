@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         setTimeout(() => {
                             removeTypingIndicator(capacityTypingIndicator);
-                            addMessage("we've reached capacity.", 'ai');
+                            addMessage("we've reached capacity", 'ai');
                             
                             // Style the input to appear grayed out
                             chatInput.style.backgroundColor = "#444"; 
