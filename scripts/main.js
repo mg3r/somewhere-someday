@@ -147,19 +147,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     if (config.atCapacity) {
                         // Add capacity message
-                        addMessage("somewhere: xxx\nsomeday: april 5 2025", 'ai');
+                        addMessage("somewhere: xxx\nsomeday: xxx", 'ai');
                         
                         // Show typing indicator for capacity message
                         const capacityTypingIndicator = showTypingIndicator();
                         
                         setTimeout(() => {
                             removeTypingIndicator(capacityTypingIndicator);
-                            addMessage("we've reached capacity", 'ai');
+                            addMessage("we'll be back soon :)", 'ai');
                             
                             // Style the input to appear grayed out
                             chatInput.style.backgroundColor = "#444"; 
                             chatInput.style.color = "#777";
-                            chatInput.placeholder = "at capacity";
+                            chatInput.placeholder = "to be continued...";
                             
                             // Make sure it stays disabled
                             chatInput.disabled = true;
